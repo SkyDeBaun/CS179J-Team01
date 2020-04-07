@@ -1,1 +1,1 @@
-# CS179J
+# CS179J - Senior Design Project
