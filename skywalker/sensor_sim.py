@@ -1,11 +1,11 @@
-#Connects Raspberry Pi to AWS IoT Core
-#2048 bit encrypted MQTT messaging
-#
+#Skywalker connects Raspberry Pi to AWS IoT Core -> Happy Easter
+#2048 bit encrypted MQTT messaging protocol 
+#publishes payload -> a json object (w/static test values)
 
+#includes--------------------------------------------------------------------
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from time import sleep
-from datetime import date, datetime
- 
+from datetime import date, datetime 
  
 # AWS IoT certificate based connection---------------------------------------
 myMQTTClient = AWSIoTMQTTClient("333052c1bf")#this can be any arbitrary string
@@ -21,17 +21,17 @@ myMQTTClient.connect()
 myMQTTClient.publish("Pi_sense01/info", "connected", 0)
  
 #----------------------------------------------------------------------------
-#----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #loop and publish sensor reading---------------------------------------------
 while 1:
     now = datetime.utcnow()#iso timestamp
     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-    result = 777 #instance.read()#read from sensor value instead
-    if result > 500:
+    result = 777 #read from sensor value instead
+    if result > 500: #if result = True
         payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(result) + ',"humidity": '+ str(9.9) + ' }'
-        print (payload)
-        myMQTTClient.publish("Pi_sense01/data", payload, 0)
-        sleep(4)
+        print (payload) #print message to console
+        myMQTTClient.publish("Pi_sense01/data", payload, 0) #Pi_sense01 is the name of Thing on AWS IoT
+        sleep(5)
     else:
         print (".")
         sleep(1)
