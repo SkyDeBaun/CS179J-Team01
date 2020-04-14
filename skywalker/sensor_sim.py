@@ -18,7 +18,7 @@ myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
  
 #connect and publish----------------------------------------------------------
 myMQTTClient.connect()
-myMQTTClient.publish("Pi_sense01/info", "connected", 0)
+myMQTTClient.publish("Pi_sense01/info", "connected", 0) # #Pi_sense01 is the name of Thing on AWS IoT
  
 #----------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
