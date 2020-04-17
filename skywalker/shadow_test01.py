@@ -1,18 +1,15 @@
-'''
-/*
- * 
- *
- * 
- */
- '''
+#skywalker establishes basic MQTT connection for device shadow
+#sends incrementing count to shadow document (with time stamp)
+#based on AWS shadow publication example script
+
+
+
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
-#import logging
 import time
 import json
-#import argparse
 
-
+#shema example-------------------------------------------------
 # Shadow JSON schema:
 #
 # Name: Bot
@@ -24,7 +21,7 @@ import json
 #	}
 # }
 
-# Custom Shadow callback
+# Custom Shadow callback--------------------------------------
 def customShadowCallback_Update(payload, responseStatus, token):
     # payload is a JSON string ready to be parsed using json.loads(...)
     # in both Py2.x and Py3.x
@@ -52,15 +49,13 @@ def customShadowCallback_Delete(payload, responseStatus, token):
 
 
 
-# Init AWSIoTMQTTShadowClient
+# Init AWSIoTMQTTShadowClient------------------------------------
 myAWSIoTMQTTShadowClient = None
 
 #skywalkers shadow
-myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient("333052c1bf")#this can be any arbitrary string
+myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient("333052c1bf") #this can be any arbitrary string
 myAWSIoTMQTTShadowClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com", 8883)#endpoint and port number
 myAWSIoTMQTTShadowClient.configureCredentials("cert/rootCA.pem.crt", "cert/333052c1bf-private.pem.key", "cert/333052c1bf-certificate.pem.crt")#root ca and certificate used for secure connection
-
-
 
 # AWSIoTMQTTShadowClient configuration
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
@@ -74,12 +69,13 @@ myAWSIoTMQTTShadowClient.connect()
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
 
 # Delete shadow JSON doc
-deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5)
+deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
 
-# Update shadow in a loop
+#---------------------------------------------------------------
+# Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
     JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + '}}}'
-    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5)
+    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5? look this up
     loopCount += 1
-    time.sleep(1)
+    time.sleep(5)
