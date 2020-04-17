@@ -8,6 +8,8 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import time
 import json
+import RPi.GPIO as GPIO
+
 
 #shema example-------------------------------------------------
 # Shadow JSON schema:
@@ -16,7 +18,8 @@ import json
 # {
 #	"state": {
 #		"desired":{
-#			"property":<INT VALUE>
+#			"property":<INT VALUE>,
+#           "property": <value, etc>
 #		}
 #	}
 # }
@@ -31,7 +34,7 @@ def customShadowCallback_Update(payload, responseStatus, token):
         payloadDict = json.loads(payload)
         print("~~~~~~~~~~~~~~~~~~~~~~~")
         print("Update request with token: " + token + " accepted!")
-        print("property: " + str(payloadDict["state"]["desired"]["property"]))
+        print("LED value: " + str(payloadDict["state"]["desired"]["LED"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!")
@@ -47,7 +50,28 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("Delete request " + token + " rejected!")
 
 
+#callback class/function here is redundant
+class shadowCallbackContainer:
+    def __init__(self, deviceShadowInstance):
+        self.deviceShadowInstance = deviceShadowInstance
 
+    # Custom Shadow callback
+    def customShadowCallback_Delta(self, payload, responseStatus, token):
+        # payload is a JSON string ready to be parsed using json.loads(...)
+        print("Received a delta message: ")
+        payloadDict = json.loads(payload)
+        LEDval = payloadDict["state"]["LED"] #get value from JSON field
+        print ("LED Value: " + str(LEDval))
+
+        
+        #deltaMessage = json.dumps(payloadDict["state"])
+        #print(deltaMessage)
+
+
+LEDPIN=14
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)    # Ignore warning for now
+GPIO.setup(LEDPIN, GPIO.OUT, initial=GPIO.LOW)
 
 # Init AWSIoTMQTTShadowClient------------------------------------
 myAWSIoTMQTTShadowClient = None
@@ -71,11 +95,17 @@ deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_s
 # Delete shadow JSON doc
 deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
 
+shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
+
+# Listen on deltas
+deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta)
+
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
-    JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + '}}}'
-    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5? look this up
+    JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + ', "LED": '+ str(2 * loopCount) + '}}}'
+    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
+    print("Current counter value: " + str(loopCount))
     loopCount += 1
     time.sleep(5)
