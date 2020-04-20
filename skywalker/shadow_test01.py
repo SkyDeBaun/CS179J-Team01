@@ -1,4 +1,4 @@
-#skywalker establishes basic MQTT connection for device shadow
+#skywalker establishes basic MQTT publication for device shadow
 #sends incrementing count to shadow document (with time stamp)
 #based on AWS shadow publication example script
 
@@ -7,11 +7,10 @@
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import time
+from datetime import date, datetime
 import json
-import RPi.GPIO as GPIO
 
-
-#shema example-------------------------------------------------
+#schema example-------------------------------------------------
 # Shadow JSON schema:
 #
 # Name: Bot
@@ -19,7 +18,8 @@ import RPi.GPIO as GPIO
 #	"state": {
 #		"desired":{
 #			"property":<INT VALUE>,
-#           "property": <value, etc>
+#           "LED": <value, etc>,
+#           "Time": <string>
 #		}
 #	}
 # }
@@ -35,6 +35,7 @@ def customShadowCallback_Update(payload, responseStatus, token):
         print("~~~~~~~~~~~~~~~~~~~~~~~")
         print("Update request with token: " + token + " accepted!")
         print("LED value: " + str(payloadDict["state"]["desired"]["LED"]))
+        print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!")
@@ -50,7 +51,7 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("Delete request " + token + " rejected!")
 
 
-#callback class/function here is redundant
+#delta callback--------------------------------------------------
 class shadowCallbackContainer:
     def __init__(self, deviceShadowInstance):
         self.deviceShadowInstance = deviceShadowInstance
@@ -58,20 +59,16 @@ class shadowCallbackContainer:
     # Custom Shadow callback
     def customShadowCallback_Delta(self, payload, responseStatus, token):
         # payload is a JSON string ready to be parsed using json.loads(...)
-        print("Received a delta message: ")
+        print("Received a message: ")
         payloadDict = json.loads(payload)
         LEDval = payloadDict["state"]["LED"] #get value from JSON field
-        print ("LED Value: " + str(LEDval))
-
-        
+        print ("Requested LED Value: " + str(LEDval))
+        print ("Requested Time Stamp: " + payloadDict["state"]["Time"])
+        print ("Token: " + str(token))        
         #deltaMessage = json.dumps(payloadDict["state"])
         #print(deltaMessage)
 
 
-LEDPIN=14
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)    # Ignore warning for now
-GPIO.setup(LEDPIN, GPIO.OUT, initial=GPIO.LOW)
 
 # Init AWSIoTMQTTShadowClient------------------------------------
 myAWSIoTMQTTShadowClient = None
@@ -92,20 +89,23 @@ myAWSIoTMQTTShadowClient.connect()
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
 
-# Delete shadow JSON doc
-deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
+# Delete device shodow------------------------------------------
+#deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
 
-shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
+#Delta Callback-------------------------------------------------
+#shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
+#deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta) #why does it loop here? (rolled into update below?!)
 
-# Listen on deltas
-deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta)
 
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
-    JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + ', "LED": '+ str(2 * loopCount) + '}}}'
+
+    #publish data to device shadow------------------------------
+    now = datetime.utcnow()#iso timestamp
+    now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
+    JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + ', "LED": '+ str(2 * loopCount) + ', "Time": "' + now_str + '"}}}'
     deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
-    print("Current counter value: " + str(loopCount))
     loopCount += 1
     time.sleep(5)
