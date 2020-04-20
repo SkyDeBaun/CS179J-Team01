@@ -1,7 +1,5 @@
-#skywalker establishes basic MQTT connection for device shadow
-#sends incrementing count to shadow document (with time stamp)
+#skywalker establishes basic MQTT subscriptions for device shadow
 #based on AWS shadow publication example script
-
 
 
 
@@ -67,17 +65,10 @@ class shadowCallbackContainer:
         LEDval = payloadDict["state"]["LED"] #get value from JSON field
         print ("Requested LED Value: " + str(LEDval))
         print ("Requested Time Stamp: " + payloadDict["state"]["Time"])
-        print ("Token: " + str(token))
-
-        
+        print ("Token: " + str(token))        
         #deltaMessage = json.dumps(payloadDict["state"])
         #print(deltaMessage)
 
-
-LEDPIN=14
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)    # Ignore warning for now
-GPIO.setup(LEDPIN, GPIO.OUT, initial=GPIO.LOW)
 
 # Init AWSIoTMQTTShadowClient------------------------------------
 myAWSIoTMQTTShadowClient = None
@@ -106,15 +97,10 @@ deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_s
 #shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
 #deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta) #why does it loop here? (rolled into update below?!)
 
-
-#get device shadow---------------------------------------------
-#deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) 
-
-
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
+    #get device shadow---------------------------------------------
     deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) 
-
     time.sleep(5)
