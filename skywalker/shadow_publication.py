@@ -74,11 +74,12 @@ class shadowCallbackContainer:
 myAWSIoTMQTTShadowClient = None
 
 #skywalkers shadow
-myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient("333052c1bf") #this can be any arbitrary string
+myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient("zc1bf") #this can be any UNIQUE string (for testing with same Thing.. use different client ID's!!!)
 myAWSIoTMQTTShadowClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com", 8883)#endpoint and port number
 myAWSIoTMQTTShadowClient.configureCredentials("cert/rootCA.pem.crt", "cert/333052c1bf-private.pem.key", "cert/333052c1bf-certificate.pem.crt")#root ca and certificate used for secure connection
 
 # AWSIoTMQTTShadowClient configuration
+
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
 myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
