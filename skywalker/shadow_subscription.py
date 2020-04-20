@@ -52,23 +52,17 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("Delete request " + token + " rejected!")
 
 
-#callback class/function here is redundant
-class shadowCallbackContainer:
-    def __init__(self, deviceShadowInstance):
-        self.deviceShadowInstance = deviceShadowInstance
-
-    # Custom Shadow callback
-    def customShadowCallback_Delta(self, payload, responseStatus, token):
-        # payload is a JSON string ready to be parsed using json.loads(...)
+def customShadowCallback_Delta(payload, responseStatus, token):
+# payload is a JSON string ready to be parsed using json.loads(...)
         print("Received a message: ")
         payloadDict = json.loads(payload)
         LEDval = payloadDict["state"]["LED"] #get value from JSON field
         print ("Requested LED Value: " + str(LEDval))
         print ("Requested Time Stamp: " + payloadDict["state"]["Time"])
-        print ("Token: " + str(token))        
+        print ("Token: " + str(token)) 
+        print (" ")        
         #deltaMessage = json.dumps(payloadDict["state"])
         #print(deltaMessage)
-
 
 # Init AWSIoTMQTTShadowClient------------------------------------
 myAWSIoTMQTTShadowClient = None
@@ -89,12 +83,12 @@ myAWSIoTMQTTShadowClient.connect()
 
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
-
+deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
     #get device shadow---------------------------------------------
-    deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) 
-    time.sleep(5)
+    #deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) DON'T USE -> USE DeltaCallback (only updates on changed shadow. Cool!)
+    time.sleep(1)
