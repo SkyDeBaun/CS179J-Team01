@@ -88,6 +88,7 @@ myAWSIoTMQTTShadowClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.ama
 myAWSIoTMQTTShadowClient.configureCredentials("cert/rootCA.pem.crt", "cert/333052c1bf-private.pem.key", "cert/333052c1bf-certificate.pem.crt")#root ca and certificate used for secure connection
 
 # AWSIoTMQTTShadowClient configuration
+
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
 myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
@@ -106,21 +107,14 @@ deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_s
 #deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta) #why does it loop here? (rolled into update below?!)
 
 
-
-deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) #delete first to clear existing doc
+#get device shadow---------------------------------------------
+#deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) 
 
 
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
+    deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) 
 
-    now = datetime.utcnow()#iso timestamp
-    now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-    #print("Current Time: " + str(now_str))
-
-    #JSONPayload = '{"state":{"desired":{"property":' + str(loopCount) + ', "LED": '+ str(2 * loopCount) + ', "Time": "' + now_str + '"}}}'
-    #deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
-    #print("Current counter value: " + str(loopCount))
-    #loopCount += 1
     time.sleep(5)
