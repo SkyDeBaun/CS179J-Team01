@@ -90,12 +90,6 @@ myAWSIoTMQTTShadowClient.connect()
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
 
-# Delete shadow JSON doc -> not neccesarily good for production (assuming you want to retreive data from shadow document..)
-#deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
-
-#seems reduncant -> update is providing pub/sub functionality? more testing required to verify
-#shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
-#deviceShadowHandler.shadowRegisterDeltaCallback(shadowCallbackContainer_Bot.customShadowCallback_Delta) #why does it loop here? (rolled into update below?!)
 
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
