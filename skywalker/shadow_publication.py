@@ -91,7 +91,7 @@ myAWSIoTMQTTShadowClient.connect()
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
 
 # Delete device shodow------------------------------------------
-#deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
+deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
 
 #Delta Callback-------------------------------------------------
 #shadowCallbackContainer_Bot = shadowCallbackContainer(deviceShadowHandler)
