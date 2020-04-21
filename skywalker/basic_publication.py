@@ -34,9 +34,11 @@ while 1:
         payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(result) + ',"humidity": '+ str(99.99) + ' }'
         print (payload) #print message to console
         myMQTTClient.publish("Pi_sense01/data", payload, 0)
-        sleep(10)
+        sleep(5)
     else:
         print (".")
         sleep(1)
     
     result += 1
+    if result > 790:
+        result = 40
