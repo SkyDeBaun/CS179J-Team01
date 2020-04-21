@@ -25,7 +25,10 @@ myMQTTClient.connect()
  
  # Callback function triggered when the topic subscribed to gets new published data
 def myCallBack(self, params, packet):
-        print(packet.payload)
+        #print(packet.payload)
+        payloadDict = json.loads(packet.payload)
+        Temp = payloadDict ["temperature"] #get value from JSON field
+        print("Temperature: " + str(Temp))
 
 # Specify what to do, when we receive an update
 def callback_update_accepted(Device_ID, userdata, message):
