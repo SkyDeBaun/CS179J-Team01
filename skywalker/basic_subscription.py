@@ -22,13 +22,21 @@ myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
  
 #connect and publish----------------------------------------------------------
 myMQTTClient.connect()
- 
+Temp = 0
+
+
  # Callback function triggered when the topic subscribed to gets new published data
 def myCallBack(self, params, packet):
         #print(packet.payload)
         payloadDict = json.loads(packet.payload)
+        global Temp
         Temp = payloadDict ["temperature"] #get value from JSON field
         print("Temperature: " + str(Temp))
+
+        if Temp > 50:
+            print("Temp > 50: " + str(Temp))
+        else:
+            print("Temp < 50: " + str(Temp))
 
 # Specify what to do, when we receive an update-------------------------------- for future reference
 '''
@@ -62,4 +70,5 @@ print("...")
 #loop and publish sensor reading---------------------------------------------
 while 1:
     
+
     time.sleep(1)
