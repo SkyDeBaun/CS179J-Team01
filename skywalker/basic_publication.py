@@ -21,14 +21,14 @@ myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 myMQTTClient.connect()
 myMQTTClient.publish("Pi_sense01/info", "connected", 0) # #Pi_sense01 is the name of Thing on AWS IoT
  
-
+result = 777 #read from sensor value instead (in loop below)
 #----------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #loop and publish sensor reading---------------------------------------------
 while 1:
     now = datetime.utcnow()#iso timestamp
     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-    result = 777 #read from sensor value instead
+    #result = 777 #read from sensor value instead
     
     if result > 500: #if result = True
         payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(result) + ',"humidity": '+ str(99.99) + ' }'
@@ -38,3 +38,5 @@ while 1:
     else:
         print (".")
         sleep(1)
+    
+    result += 1
