@@ -30,7 +30,8 @@ def myCallBack(self, params, packet):
         Temp = payloadDict ["temperature"] #get value from JSON field
         print("Temperature: " + str(Temp))
 
-# Specify what to do, when we receive an update
+# Specify what to do, when we receive an update-------------------------------- for future reference
+'''
 def callback_update_accepted(Device_ID, userdata, message):
     print("Got an update, on the topic:")
     print(str(message.topic))
@@ -41,11 +42,12 @@ def callback_update_accepted(Device_ID, userdata, message):
 def callback_update_rejected(Device_ID, userdata, message):
     print("The update was rejected. Received the following message:")
     print(str(message.payload))
+'''
 
 # Subscribe--------------------------------------------------------------------
 print("Subscribing...")
 
-#alt methods(?)----------------------------------------------------------------
+#alt methods(?)---------------------------------------------------------------- for future reference
 #myMQTTClient.subscribe(topic_update + "/accepted", 1, callback_update_accepted)
 #time.sleep(2)
 #myMQTTClient.subscribe(topic_update + "/rejected", 1, callback_update_rejected)
