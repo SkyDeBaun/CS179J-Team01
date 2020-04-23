@@ -83,7 +83,13 @@ myAWSIoTMQTTShadowClient.connect()
 
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
+
+#get last shadow (1 time only)
+deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) #DON'T USE -> USE DeltaCallback (only updates on changed shadow. Cool!)
+
+#update shadow on Delta (change) only
 deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
+
 
 #---------------------------------------------------------------
 # Update shadow in a loop---------------------------------------
