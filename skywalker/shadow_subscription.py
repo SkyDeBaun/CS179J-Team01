@@ -39,7 +39,8 @@ def customShadowCallback_Update(payload, responseStatus, token):
         print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
-        print("Update request " + token + " rejected!")
+        print("Update request " + token + " rejected!") #no shadow to get!
+
 
 def customShadowCallback_Delete(payload, responseStatus, token):
     if responseStatus == "timeout":
@@ -49,7 +50,7 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("Delete request with token: " + token + " accepted!")
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
-        print("Delete request " + token + " rejected!")
+        print("Delete request " + token + " rejected!") #no shadow to get!
 
 
 def customShadowCallback_Delta(payload, responseStatus, token):
@@ -73,7 +74,6 @@ myAWSIoTMQTTShadowClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.ama
 myAWSIoTMQTTShadowClient.configureCredentials("cert/rootCA.pem.crt", "cert/333052c1bf-private.pem.key", "cert/333052c1bf-certificate.pem.crt")#root ca and certificate used for secure connection
 
 # AWSIoTMQTTShadowClient configuration
-
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
 myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
@@ -84,8 +84,8 @@ myAWSIoTMQTTShadowClient.connect()
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName("Pi_sense01", True)
 
-#get last shadow (1 time only)
-deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) #DON'T USE -> USE DeltaCallback (only updates on changed shadow. Cool!)
+#get last shadow (1 time only) - if exists (callback prints message on failure to retrieve)
+deviceShadowHandler.shadowGet(customShadowCallback_Update, 5)
 
 #update shadow on Delta (change) only
 deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
@@ -95,6 +95,5 @@ deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 # Update shadow in a loop---------------------------------------
 loopCount = 0
 while True:
-    #get device shadow---------------------------------------------
-    #deviceShadowHandler.shadowGet(customShadowCallback_Update, 5) DON'T USE -> USE DeltaCallback (only updates on changed shadow. Cool!)
+    
     time.sleep(1)
