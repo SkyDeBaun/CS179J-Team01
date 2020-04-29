@@ -1,4 +1,4 @@
-#skys senseNet hub -> acts as interface between AWS IoT and tranceiver radios
+#skys senseNet hub -> acts as interface between AWS IoT and multiple tranceiver radios(rfm69)
 #cs179j -> group 01 -> design project
 
 
@@ -30,18 +30,40 @@ import string
 # Custom Shadow callback------------------------------------- update shadow
 def customShadowCallback_Update(payload, responseStatus, token):
     # payload is a JSON string ready to be parsed using json.loads(...)
-    # in both Py2.x and Py3.x
     if responseStatus == "timeout":
         print("Update request " + token + " time out!")
     if responseStatus == "accepted":
         payloadDict = json.loads(payload)
-        print("~~~~~~~~~~~~~~~~~~~~~~~")
-        print("Update request with token: " + token + " accepted!")
-        print("Temperature value: " + str(payloadDict["state"]["desired"]["Temperature"]))
-        print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
+        print("\n~~~~~~~~~~~~~~~~~~~~~~~")
+        print("Updating Thing Shadow: ")
+        
+        #print("Update request with token: " + token + " accepted!")
+        print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
+        print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
+        #print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!") #no shadow to get!
+
+
+
+def customShadowCallback_Get(payload, responseStatus, token):
+    # payload is a JSON string ready to be parsed using json.loads(...)
+    if responseStatus == "timeout":
+        print("Update request " + token + " time out!")
+    if responseStatus == "accepted":
+        payloadDict = json.loads(payload)
+        print("\n~~~~~~~~~~~~~~~~~~~~~~~")
+        print("Getting Thing Shadow: ")
+        
+        #print("Update request with token: " + token + " accepted!")
+        print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
+        print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
+        #print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
+        print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
+    if responseStatus == "rejected":
+        print("Update request " + token + " rejected!") #no shadow to get!
+
 
 
 # Custom Shadow callback------------------------------------- delete shadow
@@ -50,13 +72,14 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         print("Delete request " + token + " time out!")
     if responseStatus == "accepted":
         print("~~~~~~~~~~~~~~~~~~~~~~~")
-        print("Delete request with token: " + token + " accepted!")
+        #print("Delete request with token: " + token + " accepted!")
+        print("Deleting Thing Shadow")
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Delete request " + token + " rejected!") #no shadow to get!
 
 
-# Custom Shadow callback------------------------------------- shadow Delta
+# Custom Shadow callback------------------------------------- shadow Delta (for subscription)
 def customShadowCallback_Delta(payload, responseStatus, token):
 # payload is a JSON string ready to be parsed using json.loads(...)
         print("Received a message: ")
@@ -110,13 +133,12 @@ myAWSIoTMQTTShadowClient.connect()
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thing_name, True)
 
 #get last shadow (1 time only) - if exists (callback prints message on failure to retrieve)
-deviceShadowHandler.shadowGet(customShadowCallback_Update, 5)
+deviceShadowHandler.shadowGet(customShadowCallback_Get, 5)
+deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc (in case additions to Shadow doc)
 
-deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc
 
-
-#update shadow on Delta (change) only-------------------------
-deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
+#update shadow on Delta (change) only-------------------------??? gets copy of shadow only
+#deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 
 
 
@@ -126,15 +148,16 @@ node_id = 1 #hub node
 network_id = 100 # 1 - 255
 key = "sampleEncryptKey" #must be shared accross all radios on the radio net
 
-rx_counter = 0 #timer counter for checking for incoming data packet
-tx_counter = 0 #timer counter 
-temperature = 0 #radio's internal temperture    
+rx_counter = 0.0 #timer counter for checking for incoming data packet
+tx_counter = 0.0 #timer counter 
+up_counter = 0.0 #update counter
+
 sender = 0 #ID of transmitter
 receiver = 0 #ID of receiver
 data = [] 
-nodes = [] #save discovered active nodes on the radio net
+sensorNodes = {} #store discovered active nodes on the radio net into a list
 
-temp = -999.99
+temp = -999.99 #default start values
 lightLevel = -99
 
 #initialize radio tranceiver------------------------------------------------------------
@@ -146,11 +169,10 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
         
         # Every 2 seconds check for packets----------------------------------
         if rx_counter > 1:
-            rx_counter = 0 
-
+            rx_counter = 0 #reset counter
             
             if radio.has_received_packet():
-                print("\n\nData Packet Received")
+                #print("\n\nData Packet Received")
                 
                 # Process packets
                 for packet in radio.get_packets():
@@ -163,57 +185,62 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                         datastring += chr(x) #convert to char and add to string
                     
                     #output received data--------------------------------------
+                    '''
                     print("---------------------------------")
                     print("Receiver Node: \t" + str(receiver))
                     print("Sender Node: \t" + str(sender))
                     print("Data String: \t" + str(datastring))
                     print("\n")
+                    '''
 
+                    #parse radio data string for value pair--------------------
                     parse = datastring.split(" ")
-                    print("Parse-------------------------------results:")
-                    print("Parse 0: " + str(parse[0]))
-                    print("Parse 1: " + str(parse[1]))
-
-
+                    #print("Parse-------------------------------results:")
+                    #print("Parse 0: " + str(parse[0]))
+                    #print("Parse 1: " + str(parse[1]))
 
                     sensorType = str(parse[0].replace(":","")) #clean junk from parsed string
 
                     if sensorType == "Temperature":
                         temp = int(parse[1])
-                        temp = temp/100 #convert to float
+                        temp = temp/100 #convert to float (puts in decimal form)
 
                     elif sensorType == "Light":
                         lightLevel = parse[1].replace("%", "")
                         lightLevel = int(lightLevel)
-                        print("hello frakin light: "+ str(lightLevel))
                     
-                    
+                    #store list of nodes on radio network
+                    if str(sender) not in sensorNodes:
+                        #add new node to dictionary of nodes
+                        sensorNodes[str(sender)] = sensorType
 
-                    #send recieved sensor data to cloud------------------------- TEST
+                    
+                    #send recieved sensor data to shadow on the cloud----------- 
                     now = datetime.utcnow()#iso timestamp
                     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-                    #JSONPayload = '{"state":{"desired":{"property":' + str(rx_counter) + ', "LED": '+ str(datastring) + ', "Time": "' + now_str + '"}}}'
-                    #JSONPayload = '{"state":{"desired":{"property":' + str(7) + ', "Temperature": "' + str(sensorValue) + '", "Time": "' + now_str + '"}}}'
                     JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}}}'
 
-                    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
+                    #update shadow ---------------------------------------------
+                    #deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
+
+        if up_counter > 3: #every 3 seconds
+            up_counter = 0
+            
+            #update shadow ---------------------------------------------
+            deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
 
         
-        #test send message------------------------------------------------------ Future use: probing for devices on the network
-        # Every 5 seconds send a test message
-        if tx_counter > 5:
-            tx_counter=0
+        if tx_counter > 5: # every 5 seconds
+            tx_counter = 0.0
 
-            #test
-            #deviceShadowHandler.shadowGet(customShadowCallback_Update, 5)
-            #deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
-
-
+            #list nodes in dictionary
+            print("Nodes on the network: " + str(len(sensorNodes)))
+            for val in sensorNodes:
+                print("Node " + val + ": " + sensorNodes[val]) 
             
-            #temperature = radio.read_temperature()
-            #print("Internal Temperature: " + str(temperature) + "C")
-            
-            # Send
+            sensorNodes.clear()
+                        
+            #test send message------------------------------------------------------ Future use: probing for devices on the network
             '''
             print ("Sending to node: " + str(recipient_id))
             if radio.send(recipient_id, "TEST: " + str(counter), attempts=3, waitTime=100):
@@ -223,10 +250,10 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             '''
 
         #print("Listening...", len(radio.packets), radio.mode_name)
-        delay = .5
+        delay = .5 #1/2 second interval
         rx_counter += delay
         tx_counter += delay
-        
+        up_counter += delay
 
         #print("RX Counter: " + str(rx_counter))
         time.sleep(delay)
