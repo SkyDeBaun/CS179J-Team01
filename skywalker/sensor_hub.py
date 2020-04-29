@@ -134,6 +134,8 @@ receiver = 0 #ID of receiver
 data = [] 
 nodes = [] #save discovered active nodes on the radio net
 
+temp = -999.99
+lightLevel = -99
 
 #initialize radio tranceiver------------------------------------------------------------
 #---------------------------------------------------------------------------------------
@@ -168,20 +170,31 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                     print("\n")
 
                     parse = datastring.split(" ")
-                    sensorType = str(parse[0])
-                    sensorValue = int(parse[1])
-                    sensorValue = sensorValue/100
-
                     print("Parse-------------------------------results:")
-                    print("Parse 0: " + str(sensorType))
-                    print("Parse 1: " + str(sensorValue))
+                    print("Parse 0: " + str(parse[0]))
+                    print("Parse 1: " + str(parse[1]))
 
+
+
+                    sensorType = str(parse[0].replace(":","")) #clean junk from parsed string
+
+                    if sensorType == "Temperature":
+                        temp = int(parse[1])
+                        temp = temp/100 #convert to float
+
+                    elif sensorType == "Light":
+                        lightLevel = parse[1].replace("%", "")
+                        lightLevel = int(lightLevel)
+                        print("hello frakin light: "+ str(lightLevel))
+                    
+                    
 
                     #send recieved sensor data to cloud------------------------- TEST
                     now = datetime.utcnow()#iso timestamp
                     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
                     #JSONPayload = '{"state":{"desired":{"property":' + str(rx_counter) + ', "LED": '+ str(datastring) + ', "Time": "' + now_str + '"}}}'
-                    JSONPayload = '{"state":{"desired":{"property":' + str(7) + ', "Temperature": "' + str(sensorValue) + '", "Time": "' + now_str + '"}}}'
+                    #JSONPayload = '{"state":{"desired":{"property":' + str(7) + ', "Temperature": "' + str(sensorValue) + '", "Time": "' + now_str + '"}}}'
+                    JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}}}'
 
                     deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
 
@@ -192,7 +205,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             tx_counter=0
 
             #test
-            deviceShadowHandler.shadowGet(customShadowCallback_Update, 5)
+            #deviceShadowHandler.shadowGet(customShadowCallback_Update, 5)
             #deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 
 
