@@ -5,6 +5,8 @@ from datetime import date, datetime
 
 import subprocess
 
+import deviceBehaviours
+
 CLIENT = "333052c1bf"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
@@ -17,9 +19,16 @@ DEVICE_TYPE = "CameraModule"
 THING_NAME = "Camera1"
 TOPICS = ["picture", "stream", "video"]
 
-def AWS_MQTT_subscribe():
+def AWS_MQTT_subscribe(MQTTClient, topic):
+  topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
+  if topic == None:
+    for t in TOPICS:
+      callbackFunction = deviceBehaviours.generateCallbackFunction(t)
+      MQTTClient.subscribe(topicPath + t, 1, callbackFunction)
+  else:
     #TODO
-    return
+    print("Topic not found, fix this")
+    exit(1)
 
 def AWS_MQTT_Initialize():
   subprocess.call('./copyCertificates.sh')
