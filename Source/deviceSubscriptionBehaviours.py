@@ -1,6 +1,8 @@
 import subprocess
 
 def picture(client, userdata, message):#TODO Implement callback funcitonality
+#  print("picture topic subscribed fired beep boop beep")
+#  print(message.payload) 
   return
 
 def stream(client, userdata, message):#TODO Implement callback functionality
@@ -9,7 +11,7 @@ def stream(client, userdata, message):#TODO Implement callback functionality
 def video(client, userdata, message):#TODO Implement callback functionality
   return
 
-topicDictionary = {
+subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
   "video" : video
@@ -20,4 +22,4 @@ topicDictionary = {
 #https://stackoverflow.com/questions/9168340/using-a-dictionary-to-select-function-to-execute
 #Maybe check if k is valid input
 def generateCallbackFunction(k):
-  return topicDictionary[k]
+  return subscribedTopicDictionary[k]

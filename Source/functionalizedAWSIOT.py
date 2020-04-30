@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 import subprocess
 
-import deviceBehaviours
+import deviceSubscriptionBehaviours
 
 CLIENT = "333052c1bf"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
@@ -21,13 +21,13 @@ THING_NAME = "Camera1"
 TOPICS = ["picture", "stream", "video"]
 
 def AWS_MQTT_subscribe(MQTTClient, topic):
+  print("Subscribing to topics")
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
     for t in TOPICS:
-      callbackFunction = deviceBehaviours.generateCallbackFunction(t)
-      if not MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
-        print("subscribe failed")
-        exit(1)
+      callbackFunction = deviceSubscriptionBehaviours.generateCallbackFunction(t)
+      if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
+        print(t + " Subscription successful")
   else:
     #TODO
     print("Topic not found, fix this")
@@ -44,18 +44,19 @@ def AWS_MQTT_Initialize():
   myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
   myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
   myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
- 
-  #connect and publish----------------------------------------------------------
+
+  #connect, subscribe and publish----------------------------------------------------------
   myMQTTClient.connect()
+  AWS_MQTT_subscribe(myMQTTClient, None)
   myMQTTClient.publish(THING_NAME + "/info", "connected", 0)
   return myMQTTClient
 
 
-def AWS_MQTT_publish(MQTTClient, topic, message):
-    if topic not in TOPICS:
-        TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
+def AWS_MQTT_publish(MQTTClient, topic, data):
+    # if topic not in TOPICS:
+    #     TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
     #TODO Add a timestamp to the message
-    MQTTClient.publish(THING_NAME + "/" + topic, message, 0)
+    MQTTClient.publish(DEVICE_TYPE + "/" + THING_NAME + "/" + topic, data, 1)
 
 def AWS_MQTT_Job():
     #TODO
