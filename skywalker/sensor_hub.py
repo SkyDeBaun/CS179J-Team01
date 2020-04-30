@@ -150,19 +150,21 @@ up_counter = 0.0 #update counter
 
 sender = 0 #ID of transmitter
 receiver = 0 #ID of receiver
-data = [] 
+data = [] #temp list for grabbing sensor values
 sensorNodes = {} #store discovered active nodes on the radio net into a list
+numberNodes = 0 #save number of nodes on radio transceiver network
+
 temp = -999.99 #default start values
 lightLevel = -99
 
-#default state JSON object avoids rare instance of this not being initialized yet (ie if seninitial data takes longer than 3 seconds )
+#default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
 
 
 #initialize radio tranceiver------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
-    print ("INITIALIZING TRANSCEIVER RADIO...\n\n")
+    print ("\nINITIALIZING TRANSCEIVER RADIO...\n\n")
         
     while True:
         
@@ -212,8 +214,10 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                     if str(sender) not in sensorNodes:                        
                         sensorNodes[str(sender)] = sensorType #add new node
 
+                    numberNodes = len(sensorNodes) #count the nodes
+
                     
-                    #colate recieved sensor data------------------------------- 
+                    #collate recieved sensor data------------------------------- 
                     now = datetime.utcnow()#iso timestamp
                     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
                     JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}}}'
@@ -224,15 +228,19 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             up_counter = 0
 
             #list nodes in dictionary
-            print("TRANSCEIVER NODES ON THIS NETWORK: " + str(len(sensorNodes)))
+
+
+            print("TRANSCEIVER NODES ON THIS NETWORK: " + str(numberNodes))
             for val in sensorNodes:
                 print("Node " + val + ": " + sensorNodes[val])            
             
-            sensorNodes.clear() #clear dict of active nodes       
+            
+            sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary    
 
 
             #update shadow -----------------------------------------------------
-            deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
+            if numberNodes > 0: #only send if 1 or more nodes
+                deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
 
 
         #5 second counter-------------------------------------------------------
@@ -242,6 +250,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                                
 
             #test send message------------------------------------------------------ Future use: probing for devices on the network
+            #-----------------------------------------------------------------------> or remote control
             '''
             print ("Sending to node: " + str(recipient_id))
             if radio.send(recipient_id, "TEST: " + str(counter), attempts=3, waitTime=100):
