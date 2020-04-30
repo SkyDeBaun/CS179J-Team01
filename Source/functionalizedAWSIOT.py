@@ -15,6 +15,7 @@ CA_CERTIFICATE = "../Certificates/root-CA.crt"
 PRIVATE_KEY = "../Certificates/device-private.pem.key"
 DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
 
+#These might not be able to be functionalized unfortunately
 DEVICE_TYPE = "CameraModule"
 THING_NAME = "Camera1"
 TOPICS = ["picture", "stream", "video"]
@@ -24,7 +25,9 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
   if topic == None:
     for t in TOPICS:
       callbackFunction = deviceBehaviours.generateCallbackFunction(t)
-      MQTTClient.subscribe(topicPath + t, 1, callbackFunction)
+      if not MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
+        print("subscribe failed")
+        exit(1)
   else:
     #TODO
     print("Topic not found, fix this")
@@ -50,7 +53,7 @@ def AWS_MQTT_Initialize():
 
 def AWS_MQTT_publish(MQTTClient, topic, message):
     if topic not in TOPICS:
-        TOPICS.append(topic)
+        TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
     #TODO Add a timestamp to the message
     MQTTClient.publish(THING_NAME + "/" + topic, message, 0)
 

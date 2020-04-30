@@ -1,12 +1,12 @@
 import subprocess
 
-def picture():#TODO Implement callback funcitonality
+def picture(client, userdata, message):#TODO Implement callback funcitonality
   return
 
-def stream():#TODO Implement callback functionality
+def stream(client, userdata, message):#TODO Implement callback functionality
   return
 
-def video():#TODO Implement callback functionality
+def video(client, userdata, message):#TODO Implement callback functionality
   return
 
 topicDictionary = {
