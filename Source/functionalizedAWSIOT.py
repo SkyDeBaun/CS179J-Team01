@@ -1,4 +1,5 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTThingJobsClient
 from time import sleep
 from datetime import date, datetime
@@ -32,6 +33,25 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
     #TODO
     print("Topic not found, fix this")
     exit(1)
+
+
+def AWS_SHADOW_Initialize(): #TODO Test this
+  subprocess.call('./copyCertificates.sh')
+  # AWS IoT certificate based connection---------------------------------------
+  myShadowClient = AWSIoTMQTTShadowClient(CLIENT)#this can be any arbitrary string
+  myShadowClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
+  myShadowClient.configureCredentials(CA_CERTIFICATE, PRIVATE_KEY, DEVICE_CERTIFICATE)#root ca and certificate used for secure connection
+
+  myShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
+  myShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
+
+  #connect, subscribe and publish----------------------------------------------------------
+  myShadowClient.connect()
+  shadowHandler = myShadowClient.createShadowHandlerWithName(THING_NAME, True)
+  myMQTTClient = myShadowClient.getMQTTConnection()
+  AWS_MQTT_subscribe(myMQTTClient, None)
+  return (shadowHandler, myMQTTClient)
+
 
 def AWS_MQTT_Initialize():
   subprocess.call('./copyCertificates.sh')
