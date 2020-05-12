@@ -6,7 +6,9 @@ from datetime import date, datetime
 
 import subprocess
 
-import deviceSubscriptionBehaviours
+import subscriptionFunctions
+
+from defines import * #TODO Find a better way to do this
 
 CLIENT = "333052c1bf"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
@@ -16,17 +18,12 @@ CA_CERTIFICATE = "../Certificates/root-CA.crt"
 PRIVATE_KEY = "../Certificates/device-private.pem.key"
 DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
 
-#These might not be able to be functionalized unfortunately
-DEVICE_TYPE = "CameraModule"
-THING_NAME = "Camera1"
-TOPICS = ["picture", "stream", "video"]
-
 def AWS_MQTT_subscribe(MQTTClient, topic):
   print("Subscribing to topics")
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
     for t in TOPICS:
-      callbackFunction = deviceSubscriptionBehaviours.generateCallbackFunction(t)
+      callbackFunction = subscriptionFunctions.generateCallbackFunction(t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
   else:

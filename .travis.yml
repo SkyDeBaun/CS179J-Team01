@@ -4,6 +4,7 @@ python:
 
 install:
   - pip install AWSIoTPythonSDK
+  - pip install boto3
 
 script:
 #  - python Tests/runTests.py
