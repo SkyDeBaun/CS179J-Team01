@@ -17,6 +17,7 @@ from RFM69 import Radio, FREQ_915MHZ
 
 #utility-----------------------------------------------------
 from datetime import date, datetime
+from os import system, name 
 import time
 import json
 import random
@@ -98,7 +99,21 @@ def generateClient_ID(stringLength = 10):
     client_string = string.ascii_letters + string.digits
     return ''.join((random.choice(client_string) for i in range(stringLength)))
 
+# define our clear function 
+def clear(): 
+  
+    # for windows 
+    if name == 'nt': 
+        _ = system('cls') 
+  
+    # for mac and linux(here, os.name is 'posix') 
+    else: 
+        _ = system('clear') 
 
+
+
+
+        
 
 #AWS IoT MQTT configuration-------------------------------------------------------------
 #---------------------------------------------------------------------------------------
