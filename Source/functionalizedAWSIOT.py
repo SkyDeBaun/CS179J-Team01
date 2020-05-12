@@ -69,7 +69,6 @@ def AWS_MQTT_Initialize():
 def getTimeStamp():
   return str(time.strftime("%Y-%m-%d_%H:%M:%S"))
 
-
 def AWS_MQTT_publish(MQTTClient, topic, data):
     # if topic not in TOPICS:
     #     TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
