@@ -8,4 +8,4 @@ install:
 
 script:
 #  - python Tests/runTests.py
-  - pytest Tests/test.py
+  - pytest Source/test.py
