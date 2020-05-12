@@ -121,9 +121,9 @@ def clear():
 #client config----------------------------------------------- CLIENT SETTINGS
 AWS_IoT_endpoint = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 port = 8883
-root_CA = "cert/rootCA.pem.crt"
-private_key = "cert/333052c1bf-private.pem.key"
-certificate = "cert/333052c1bf-certificate.pem.crt"
+root_CA = "../Certificates/root-CA.crt"
+private_key = "../Certificates/device-private.pem.key"
+certificate = "../Certificates/device-certificate.pem.crt"
 client_ID = generateClient_ID()
 thing_name = "Pi_sense01"
 
@@ -183,7 +183,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
         
     while True:
         
-        # Every 2 seconds check for packets----------------------------------
+        # Every 1 seconds check for packets----------------------------------
         if rx_counter > 1:
             rx_counter = 0 #reset counter
             
@@ -247,8 +247,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
 
             print("TRANSCEIVER NODES ON THIS NETWORK: " + str(numberNodes))
             for val in sensorNodes:
-                print("Node " + val + ": " + sensorNodes[val])            
-            
+                print("Node " + val + ": " + sensorNodes[val])          
             
             sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary    
 
