@@ -33,16 +33,28 @@ def customShadowCallback_Update(payload, responseStatus, token):
     # payload is a JSON string ready to be parsed using json.loads(...)
     if responseStatus == "timeout":
         print("Update request " + token + " time out!")
+
     if responseStatus == "accepted":
         payloadDict = json.loads(payload)
         #print("------------------------")
         print("\nUPDATING THING SHADOW: " + str(payloadDict["state"]["desired"]["Time"]))
+
+        #print only if not default value----------------------
+        myTemp = int(payloadDict["state"]["desired"]["Temperature"])        
+        if (myTemp != -999):
+            print("Temperature: " + str(myTemp))
         
+        myLight = int(payloadDict["state"]["desired"]["Light"])
+        if (myLight != -999):
+            print("Light level: " + str(myLight))
+
+
         #print("Update request with token: " + token + " accepted!")
-        print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
-        print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
+        #print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
+        #print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
         #print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
         print("\n\n")
+
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!") #no shadow to get!
 
@@ -170,8 +182,8 @@ data = [] #temp list for grabbing sensor values
 sensorNodes = {} #store discovered active nodes on the radio net into a list
 numberNodes = 0 #save number of nodes on radio transceiver network
 
-temp = -999.99 #default start values
-lightLevel = -99
+temp = -999.00 #default start values
+lightLevel = -999
 
 #default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
@@ -241,7 +253,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             
                     
         #3 second counter-------------------------------------------------------
-        if up_counter > 3.0: #every 3 seconds
+        if up_counter > 2.0: #every 2 seconds
             up_counter = 0
 
             clear() #refresh screen
@@ -260,7 +272,12 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
         if node_counter > 21.0: # every 21 seconds
             node_counter = 0.0
 
-            sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary    
+            #reset dict and shadow
+            sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary  
+            deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5)#delete shadow...
+            temp = -999.00 #default start values
+            lightLevel = -999
+  
 
             #test send message------------------------------------------------------ Future use: probing for devices on the network
             #-----------------------------------------------------------------------> or remote control
