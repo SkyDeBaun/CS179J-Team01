@@ -1,5 +1,7 @@
 import initializeDeviceType
 import subprocess
+from functionalizedAWSIOT import getTimeStamp
+
 
 # def verifyCamera():
 #   if initializeDeviceType.PERIPHERALS{"camera"} == 0:
@@ -7,5 +9,11 @@ import subprocess
 #     exit(1)
 
 def takePicture():
+  fileName = "../Data/Images/" + getTimeStamp() + ".jpg"
+  subprocess.run(["raspistill", "-o", fileName])
 
 def takeVideo(duration):
+  return NotImplementedError
+
+def deletePicture():
+  return NotImplementedError

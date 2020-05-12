@@ -1,10 +1,9 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTThingJobsClient
-from datetime import date, datetime
 
 import subprocess
-
+import time
 import subscriptionFunctions
 
 from defines import * #TODO Find a better way to do this
@@ -66,6 +65,9 @@ def AWS_MQTT_Initialize():
   AWS_MQTT_subscribe(myMQTTClient, None)
   myMQTTClient.publish(THING_NAME + "/info", "connected", 0)
   return myMQTTClient
+
+def getTimeStamp():
+  return str(time.strftime("%Y-%m-%d_%H:%M:%S"))
 
 
 def AWS_MQTT_publish(MQTTClient, topic, data):

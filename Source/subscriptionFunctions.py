@@ -1,4 +1,4 @@
-import subprocess
+import cameraCode
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -6,15 +6,15 @@ import subprocess
 # These fields are pending to be deprecated and should not be depended on.
 
 def picture(client, userdata, message):#TODO Implement callback funcitonality
-#  print("picture topic subscribed fired beep boop beep")
-#  print(message.payload) 
+  cameraCode.takePicture()
+  #TODO something about s3 upload
   return
 
 def stream(client, userdata, message):#TODO Implement callback functionality
-  return
+  return NotImplementedError
 
 def video(client, userdata, message):#TODO Implement callback functionality
-  return
+  return NotImplementedError
 
 subscribedTopicDictionary = {
   "picture" : picture,
