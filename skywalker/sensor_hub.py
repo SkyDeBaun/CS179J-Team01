@@ -36,7 +36,7 @@ def customShadowCallback_Update(payload, responseStatus, token):
     if responseStatus == "accepted":
         payloadDict = json.loads(payload)
         #print("------------------------")
-        print("\nUPDATING THING SHADOW: ")
+        print("\nUPDATING THING SHADOW: " + str(payloadDict["state"]["desired"]["Time"]))
         
         #print("Update request with token: " + token + " accepted!")
         print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
@@ -55,14 +55,14 @@ def customShadowCallback_Get(payload, responseStatus, token):
     if responseStatus == "accepted":
         payloadDict = json.loads(payload)
         #print("------------------------")
-        print("GETTING THING SHADOW FROM THE CLOUD: ")
+        print("GETTING THING SHADOW FROM THE CLOUD: \n")
         print(payloadDict)
         
         #print("Update request with token: " + token + " accepted!")
         #print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
         #print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
         #print("Time Stamp: " + str(payloadDict["state"]["desired"]["Time"]))
-        print("\n\n")
+        print("\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!") #no shadow to get!
 
@@ -75,7 +75,7 @@ def customShadowCallback_Delete(payload, responseStatus, token):
         #print("------------------------")
         #print("Delete request with token: " + token + " accepted!")
         print("DELETING THING SHADOW FROM THE CLOUD")
-        print("\n\n")
+        print("\n")
     if responseStatus == "rejected":
         print("Delete request " + token + " rejected!") #no shadow to get!
 
@@ -113,7 +113,7 @@ def clear():
 
 
 
-        
+     
 
 #AWS IoT MQTT configuration-------------------------------------------------------------
 #---------------------------------------------------------------------------------------
@@ -148,8 +148,8 @@ myAWSIoTMQTTShadowClient.connect()
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thing_name, True)
 
 #get the last shadow (1 time only) - if exists (callback prints message on failure to retrieve-> ie if no shadow exists)
-deviceShadowHandler.shadowGet(customShadowCallback_Get, 5)
-deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc (in case additions to Shadow doc)
+#deviceShadowHandler.shadowGet(customShadowCallback_Get, 5)
+#deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5) #delete first to clear existing doc (in case additions to Shadow doc)
 
 
 
@@ -162,6 +162,7 @@ key = "sampleEncryptKey" #must be shared accross all radios on the radio net
 rx_counter = 0.0 #timer counter for checking for incoming data packet
 tx_counter = 0.0 #timer counter 
 up_counter = 0.0 #update counter
+node_counter = 0.0 #when to refresh node counter
 
 sender = 0 #ID of transmitter
 receiver = 0 #ID of receiver
@@ -179,13 +180,15 @@ JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperatur
 #initialize radio tranceiver------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
-    print ("\nINITIALIZING TRANSCEIVER RADIO...\n\n")
-        
+    clear()
+    print ("INITIALIZING TRANSCEIVER RADIO NETWORK...\n\n")
+    time.sleep(1)
+
     while True:
         
         # Every 1 seconds check for packets----------------------------------
-        if rx_counter > 1:
-            rx_counter = 0 #reset counter
+        if rx_counter >= 1:
+            rx_counter = 0.0 #reset counter
             
             if radio.has_received_packet():
                 #print("\n\nData Packet Received")
@@ -225,43 +228,39 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                         lightLevel = parse[1].replace("%", "")
                         lightLevel = int(lightLevel)
                     
-                    #store dictionary of nodes on radio network
-                    if str(sender) not in sensorNodes:                        
-                        sensorNodes[str(sender)] = sensorType #add new node
-
-                    numberNodes = len(sensorNodes) #count the nodes
+                    sensorNodes[str(sender)] = sensorType #add new node -> overwrites previous values if key pair exists already
 
                     
                     #collate recieved sensor data------------------------------- 
                     now = datetime.utcnow()#iso timestamp
                     now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
                     JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}}}'
-                    
+
+            #else no packets
+
+            
                     
         #3 second counter-------------------------------------------------------
-        if up_counter > 3: #every 3 seconds
+        if up_counter > 3.0: #every 3 seconds
             up_counter = 0
 
+            clear() #refresh screen
+
             #list nodes in dictionary
-
-
-            print("TRANSCEIVER NODES ON THIS NETWORK: " + str(numberNodes))
+            print("TRANSCEIVER NODES ON THIS NETWORK: " + str(len(sensorNodes)))
             for val in sensorNodes:
-                print("Node " + val + ": " + sensorNodes[val])          
-            
-            sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary    
-
+                print("Node " + val + ": " + sensorNodes[val])                        
 
             #update shadow -----------------------------------------------------
-            if numberNodes > 0: #only send if 1 or more nodes
+            if len(sensorNodes) > 0: #only send if 1 or more nodes
                 deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
 
 
-        #5 second counter-------------------------------------------------------
-        if tx_counter > 5: # every 5 seconds
-            tx_counter = 0.0
+        #reset dict on nodes----------------------------------------------------
+        if node_counter > 21.0: # every 21 seconds
+            node_counter = 0.0
 
-                               
+            sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary    
 
             #test send message------------------------------------------------------ Future use: probing for devices on the network
             #-----------------------------------------------------------------------> or remote control
@@ -272,12 +271,13 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             else:
                 print ("No Acknowledgement")
             '''
+        
 
         #print("Listening...", len(radio.packets), radio.mode_name)
-        delay = .5 #1/2 second interval
+        delay = 0.5 #1/2 second interval
         rx_counter += delay
         tx_counter += delay
         up_counter += delay
+        node_counter += delay
 
-        #print("RX Counter: " + str(rx_counter))
         time.sleep(delay)
