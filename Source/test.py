@@ -17,5 +17,4 @@ functionList.append(print)
 
 @pytest.mark.parametrize("function", functionList)
 def test_publishFunctionSignatures(function):
-  assert len(inspect.signature(function).parameters) == 3, "Actual amount of parameters {}".format(len(inspect.signature(function).parameters))
-
+  assert len(inspect.signature(function).parameters) == 3
