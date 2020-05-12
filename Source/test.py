@@ -14,8 +14,8 @@ import inspect
 
 functionList = list(subscriptionFunctions.subscribedTopicDictionary.values())
 functionList.append(print)
-# for funct in functionList:
+
 @pytest.mark.parametrize("function", functionList)
-def test_functions(function, message):
+def test_publishFunctionSignatures(function):
   assert len(inspect.signature(function).parameters) == 3, "Actual amount of parameters {}".format(len(inspect.signature(function).parameters))
 
