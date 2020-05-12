@@ -1,8 +1,8 @@
-import sys
-sys.path.insert(1, '../Source')
+# import sys
+# sys.path.insert(1, '../Source')
 
-import subscriptionFunctions
-import shadowFunctions
+# import subscriptionFunctions
+# import shadowFunctions
 
 # content of test_sample.py
 def func(x):
