@@ -1,43 +1,79 @@
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
-# setup fields
-__TableName__ = "tempHumidityData"
-Primary_Column_Name = "entryNumber"
-columns = ["temperature", "humidity"]
+def printRow(table, primaryColumnName, entryNumber):
+	# test that we can retrieve valid row in table by the row's primary key (entryNumber)
+	response = table.query(
+        KeyConditionExpression = Key(primaryColumnName).eq(entryNumber)
+	)
 
-# resource and table
-DB = boto3.resource("dynamodb")
-table = DB.Table(__TableName__)
+	print(response["Items"])
 
-# test that we can retrieve valid row in table by the row's Primary Key
-Primary_Key = 1
-response = table.query(
-        KeyConditionExpression=Key('ID').eq(Primary_Key)
-)
+def insertRow(table, columns, primaryColumnName, entryNumber, temperature, humidity):
+	# test that we can insert a new row into table with a given primary key (entryNumber)
 
-# print matching row
-print(response["Items"])
+	response = table.put_item(
+    		Item = {
+        		primaryColumnName: entryNumber,
+        		columns[0]: temperature,
+        		columns[1]: humidity
+		}
+        )
 
-# test that we can insert a new row into table (giving it Primary Key = 2)
-#Primary_Key = "2"
+def printAllRows(table, primaryColumnName):
+	# print all table entries to test we inserted rows correctly
+	# get all rows with a primary key (entryNumber) greater than or equal to 0 (so all of them)
 
-#response = table.put_item(
-#    Item={
-#        Primary_Column_Name: Primary_Key,
-#        columns[0]: "Ryan",
-#        columns[1]: "Meoni"
-#            }
-#        )
+	response = table.scan(
+    		FilterExpression = Attr(primaryColumnName).gte(0)
+	)
 
-# print all table entries to test we inserted correctly
-# get all rows with a primary key (entryNumber) greater than or equal to 0
+	for row in response["Items"]:
+		print(row)
 
-response = table.scan(
-    FilterExpression=Attr('ID').gte(0)
-)
+def deleteRow(table, primaryColumnName, entryNumber):
+	# delete a row by primary key (entryNumber)
+	response = table.delete_item(
+		Key = {
+			primaryColumnName: entryNumber
+		}
+	)
 
-print(response)
+if __name__ == "__main__":
+	# entryNumber is my primary key!
+	# setup fields
+	tableName = "tempHumidityData"
+	primaryColumnName = "entryNumber"
+	columns = ["temperature", "humidity"]
 
-for row in response["Items"]:
-	print(row)
+	# resource and table
+	DB = boto3.resource("dynamodb")
+	table = DB.Table(tableName)
+
+	# test insert row with entryNumber of 1
+	entryNumber = 1
+	testTemperature = 90
+	testHumidity = 100
+	insertRow(table, columns, primaryColumnName, entryNumber, testTemperature, testHumidity)
+
+	# print that specific row to verify it was inserted into DynamoDB
+	print("Table after inserting first row:")
+	printAllRows(table, primaryColumnName)
+
+	#insert second row
+	entryNumber = 2
+	testTemperature = 5
+	testHumidity = 10
+	insertRow(table, columns, primaryColumnName, entryNumber, testTemperature, testHumidity)
+	print("Table after inserting second row:")
+	printAllRows(table, primaryColumnName)
+
+	# now delete row with entryNumber = 1 to verify we can delete rows
+	entryNumber = 1
+	deleteRow(table, primaryColumnName, entryNumber)
+
+	# print all rows to verify row was deleted (should only see the row with entryNumber = 2)
+	print("Table after deleting first row:")
+	printAllRows(table, primaryColumnName)
+
+

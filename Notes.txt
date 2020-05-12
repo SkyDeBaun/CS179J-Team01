@@ -1,0 +1,2 @@
+If policies on the AWS determine what the device can do maybe certificates don't matter?
+Possible to reassign policies to certificates on AWS automatically? Otherwise keep other certificates on device?
