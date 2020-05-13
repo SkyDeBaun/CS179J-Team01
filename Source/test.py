@@ -22,5 +22,4 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("message", "expectedStatus", [("", 1), ("", 0), ("", 1), ("", 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
-  #TODO Reyna
-  assert subscriptionFunctions.subscribedTopicDictionary["FILL_ME_IN"](message) == expectedStatus
+	assert subscriptionFunctions.subscribedTopicDictionary["ReynaPi/ultrasonic"](None, None, message) == expectedStatus

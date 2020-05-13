@@ -1,4 +1,6 @@
 import cameraCode
+import MotorSub
+import json
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -16,10 +18,20 @@ def stream(client, userdata, message):#TODO Implement callback functionality
 def video(client, userdata, message):#TODO Implement callback functionality
   return NotImplementedError
 
+def ultrasonic(client, userdate, message):
+  distance=0
+  payloadInfo = json.load(message.payload)
+  distance = payloadInfo["distance"]
+  if distance<15:
+    MotorSub.stop()
+  else:
+    MotorSub.go()
+
 subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
-  "video" : video
+  "video" : video,
+  "ReynaPi/ultrasonic" " : ReynaPi/ultrasonic
   #FIXME Find some way to not hardcode value names
 }
 
