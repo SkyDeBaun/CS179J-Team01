@@ -6,6 +6,7 @@ import subprocess
 import time
 import subscriptionFunctions
 
+from helpers import getTimeStamp
 from defines import * #TODO Find a better way to do this
 
 CLIENT = "333052c1bf"
@@ -65,9 +66,6 @@ def AWS_MQTT_Initialize():
   AWS_MQTT_subscribe(myMQTTClient, None)
   myMQTTClient.publish(THING_NAME + "/info", "connected", 0)
   return myMQTTClient
-
-def getTimeStamp():
-  return str(time.strftime("%Y-%m-%d_%H:%M:%S"))
 
 def AWS_MQTT_publish(MQTTClient, topic, data):
     # if topic not in TOPICS:

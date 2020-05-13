@@ -13,7 +13,6 @@ import inspect
 #   assert(func(input) == expected)
 
 functionList = list(subscriptionFunctions.subscribedTopicDictionary.values())
-functionList.append(print)
 
 @pytest.mark.parametrize("function", functionList)
 def test_publishFunctionSignatures(function):
@@ -23,4 +22,4 @@ def test_publishFunctionSignatures(function):
 @pytest.mark.parametrize("message", "expectedStatus", [("", 1), ("", 0), ("", 1), ("", 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
   #TODO Reyna
-  assert subscriptionFunctions.subscribedTopicDictionary["FILL_ME_IN"](message) == expectedStatus
+  assert subscriptionFunctions.subscribedTopicDictionary["FILL_ME_IN"](None, None, message) == expectedStatus

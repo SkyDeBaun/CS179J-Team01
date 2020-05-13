@@ -1,7 +1,6 @@
 import initializeDeviceType
 import subprocess
-from functionalizedAWSIOT import getTimeStamp
-
+from helpers import getTimeStamp
 
 # def verifyCamera():
 #   if initializeDeviceType.PERIPHERALS{"camera"} == 0:
