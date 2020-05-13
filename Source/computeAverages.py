@@ -32,9 +32,13 @@ while True:
 
     humidityAvg = humiditySum / totalValues
     temperatureAvg = temperatureSum / totalValues
+    humidityAvg = round(humidityAvg, 2)
+    temperatureAvg = round(temperatureAvg, 2)
+
 
     print(f"Humidity average is: {humidityAvg}")
     print(f"Temperature average is: {temperatureAvg}")
+    print("####")
 
     sleep(5)
 

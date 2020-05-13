@@ -100,11 +100,12 @@ if __name__ == "__main__":
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
         if humidity is not None and temperature is not None:
 
-            print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temperature, humidity))
             temperature = Decimal(temperature)
             temperature = round(temperature, 2)
             humidity = Decimal(humidity)
             humidity = round(humidity, 2)
+            print(f"Temperature: {temperature}, Humidity: {humidity}")
+            print("####")
             insertRow(newTable, columns, primaryColumnName, entryNumber, temperature, humidity)
             now = datetime.utcnow()
             now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')

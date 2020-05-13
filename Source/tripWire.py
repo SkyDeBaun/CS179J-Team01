@@ -11,7 +11,7 @@ sleep(1)
 def event(ev=None):
         payload = 'Triggered'
         print("Triggered")
-        myMQTTClient.publish("ryan_pi/data", payload, 0)
+        myMQTTClient.publish("ryanpi/data", payload, 0)
 
 
 # initialize GPIO
