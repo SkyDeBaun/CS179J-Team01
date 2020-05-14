@@ -3,9 +3,6 @@ import sys
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 # Callback function that is triggered when the topic subscribed to gets new published data
-fanOn = False
-print("Fan is off.")
-print("####")
 def myCallBack(self, params, packet):
     print(packet.payload)
 
