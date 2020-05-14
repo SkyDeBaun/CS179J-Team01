@@ -1,5 +1,5 @@
 #! /bin/bash
-message=${0}
+message=${1}
 
 git status
 git add Source/*.py;
