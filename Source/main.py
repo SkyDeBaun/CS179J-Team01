@@ -8,10 +8,9 @@ def main():
   MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
 #Initialize AWS access keys
   AWSCredentials = helpers.getAWSCredentials()
-  print(AWSCredentials)
-  subscriptionFunctions.picture(None, None, None)
+#  print(AWSCredentials)
+  #subscriptionFunctions.picture(None, None, None)
   while(1):
-    print("Hello World")
     sleep(5)
 
 

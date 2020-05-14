@@ -11,6 +11,7 @@ def picture(client, userdata, message):#TODO Implement callback funcitonality
   fileName = cameraCode.takePicture()
   helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   #TODO something about s3 upload
+  print("Taking picture and uploading to S3 bin")
   return
 
 def stream(client, userdata, message):#TODO Implement callback functionality
