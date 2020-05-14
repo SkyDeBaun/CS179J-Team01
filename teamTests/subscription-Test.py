@@ -20,7 +20,7 @@ myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 myMQTTClient.connect()
-myMQTTClient.subscribe("ryan_pi/data", 1, myCallBack)
+myMQTTClient.subscribe("CameraModule/Camera1/picture", 1, myCallBack)
 
 while True:
     continue

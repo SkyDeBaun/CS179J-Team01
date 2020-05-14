@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import os
 import sys
 import boto3
@@ -6,7 +7,6 @@ import Adafruit_DHT
 from time import sleep
 from boto3.dynamodb.conditions import Key, Attr
 from decimal import Decimal
-import functionalizedAWSIOT
 from datetime import date, datetime
 
 def insertRow(table, columns, primaryColumnName, entryNumber, temperature, humidity):
@@ -59,7 +59,15 @@ def createTable(DB, tableName, primaryColumnName, columns):
 if __name__ == "__main__":
 
     #Initialize MQTT client
-    myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
+    myMQTTClient = AWSIoTMQTTClient("myClientID")
+    myMQTTClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com", 8883)
+    myMQTTClient.configureCredentials("/home/pi/AWS_certs/Amazon_Root_CA.crt", "/home/pi/AWS_certs/1aac3835be-private.pem.key", "/home/pi/AWS_certs/1aac3835be-certificate.pem.crt")
+    # Infinite offline Publish queueing
+    myMQTTClient.configureOfflinePublishQueueing(-1)
+    myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
+    myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
+    myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
+    myMQTTClient.connect()
 
     # GPIO set up
     GPIO.setmode(GPIO.BCM)
