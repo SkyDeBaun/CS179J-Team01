@@ -1,4 +1,5 @@
 import cameraCode
+import helpers
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -6,7 +7,9 @@ import cameraCode
 # These fields are pending to be deprecated and should not be depended on.
 
 def picture(client, userdata, message):#TODO Implement callback funcitonality
-  cameraCode.takePicture()
+  bucketName = "senior-design-camera-files"
+  fileName = cameraCode.takePicture()
+  helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   #TODO something about s3 upload
   return
 
