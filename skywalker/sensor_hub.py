@@ -233,6 +233,8 @@ numberNodes = 0 #save number of nodes on radio transceiver network
 temp = -999.00 #default start values
 lightLevel = -999
 
+Humidity = -999
+
 #default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
 
@@ -323,8 +325,21 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
 
             myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack)
             myMQTTClient.subscribe("ryan_pi/data", 1, myCallBack)
+            print("Humidity: " + str(float(Humidity)))
 
+            if float(Humidity) > 80:
+                if radio.send(21, "1", attempts=2, waitTime=100):
+                    #print ("LED Control Message -> On")
+                    print("") #stupid -> python complains if above print line commented (inside if statement)
+                else:
+                    #print ("LED Control Message -> No Acknowledgement")
+                    print("")
+            else:
+                if radio.send(21, "0", attempts=2, waitTime=100):
+                    #print ("LED Control Message -> Off")
+                    print("")
 
+            
 
 
         #reset dict on nodes----------------------------------------------------
