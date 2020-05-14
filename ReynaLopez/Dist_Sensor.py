@@ -55,7 +55,7 @@ setup()
 #AwsReyna connection
 myMQTTClient = AWSIoTMQTTClient("ReynaPI")
 myMQTTClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com",8883)
-myMQTTClient.configureCredentials("/home/pi/SeniorPrj/reynaPiCerts/rootCA.pem","/home/pi/SeniorPrj/reynaPiCerts/d626c8c838-private.pem.key","/home/pi/SeniorPrj/reynaPiCerts/d626c8c838-certificate.pem.crt")
+myMQTTClient.configureCredentials("/home/pi/Certificates/rootCA.pem","/home/pi/Certificates/d626c8c838-private.pem.key","/home/pi/Certificates/d626c8c838-certificate.pem.crt")
 myMQTTClient.configureOfflinePublishQueueing(-1)
 myMQTTClient.configureDrainingFrequency(2)
 myMQTTClient.configureConnectDisconnectTimeout(10)
