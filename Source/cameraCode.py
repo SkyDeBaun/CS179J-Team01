@@ -8,8 +8,15 @@ from helpers import getTimeStamp
 #     exit(1)
 
 def takePicture():
-  fileName = "../Data/Images/" + getTimeStamp() + ".jpg"
-  subprocess.run(["raspistill", "-o", fileName])
+  fileName = getTimeStamp() + ".jpg"
+  filePath = "../Data/Images/" + fileName
+  try:
+    subprocess.run(["raspistill","-n","-t", "1", "-o", filePath])
+    #See if this is blocking
+  except:
+    print("Camera not connected")
+  finally:
+    return (filePath, fileName) #Tuple in case I see future use to have standalone file name and path
 
 def takeVideo(duration):
   return NotImplementedError

@@ -23,6 +23,7 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
   if topic == None:
     for t in TOPICS:
       callbackFunction = subscriptionFunctions.generateCallbackFunction(t)
+      print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
   else:
