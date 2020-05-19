@@ -1,5 +1,8 @@
 import cameraCode
 import helpers
+import RPi.GPIO as GPIO
+import json
+from decimal import Decimal
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -21,10 +24,28 @@ def stream(client, userdata, message):#TODO Implement callback functionality
 def video(client, userdata, message):#TODO Implement callback functionality
   return NotImplemented
 
+def controlFan(self, params, packet):
+  payloadDict = json.loads(packet.payload)
+  humidity = Decimal(payloadDict["humidity"])
+  print(packet.payload)
+  if (humidity > 85):
+    print("Fan is ON")
+    print("####")
+    GPIO.output(16, GPIO.LOW)
+    fanOn = True
+
+  else:
+    print("Fan is OFF")
+    print("####")
+    GPIO.output(16, GPIO.HIGH)
+    fanOn = False
+
+
 subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
-  "video" : video
+  "video" : video, 
+  "controlFan" : controlFan
   #FIXME Find some way to not hardcode value names
 }
 
