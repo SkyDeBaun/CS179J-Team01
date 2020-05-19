@@ -16,10 +16,10 @@ def picture(client, userdata, message):#TODO Implement callback funcitonality
     return True
 
 def stream(client, userdata, message):#TODO Implement callback functionality
-  return NotImplementedError
+  return NotImplemented
 
 def video(client, userdata, message):#TODO Implement callback functionality
-  return NotImplementedError
+  return NotImplemented
 
 subscribedTopicDictionary = {
   "picture" : picture,
