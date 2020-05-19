@@ -15,7 +15,6 @@ def takePicture():
     #See if this is blocking
   except:
     print("Camera not connected")
-  finally:
     return (filePath, fileName) #Tuple in case I see future use to have standalone file name and path
 
 def takeVideo(duration):
