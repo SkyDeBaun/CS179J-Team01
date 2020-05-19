@@ -39,3 +39,4 @@ def test_publishFunctionSignatures(function):
 def test_motorOperationBehaviour(message, expectedStatus):
   #TODO Reyna
   assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+
