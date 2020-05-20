@@ -39,19 +39,22 @@ def test_publishFunctionSignatures(function):
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_publishFunctionSignatures(function):
   assert function(None, None, "test payload") != NotImplemented
-  
-data = {"distance":25}
-message = json.dump(data)
-expectedStatus = 1
 
-@pytest.mark.parametrize("message", "expectedStatus", [("", 1), ("", 0), ("", 1), ("", 0)])
-def test_motorOperationBehaviourGO(message, expectedStatus):
+#test values for motor test messages as jsons
+data1 = {"distance":25, "humidity":83}
+message1 = json.dump(data1)
+data2 = {"distance":10, "humidity":62}
+message2 = json.dump(data2)
+data3 = {"distance":100, "humidity":98}
+message3=json.dump(data3)
+data4 = {"distance":7, "humidity":30}
+message4 = json.dump(data4)
+
+@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+def test_motorOperationBehaviour(message, expectedStatus):
 	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
-data = {"distance":15}
-message = json.dump(data)
-expectedStatus = 0
-def test_motorOperationBehaviorStop(message,expectedStatus):
-	assert subscriptionFunctions.subscribedTopicDictionart["ultrasonic"](None, None, message)== expectedStatus
-
+@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+def test_motor2OperationBehaviour(message, expectedStatus):
+        assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
 
