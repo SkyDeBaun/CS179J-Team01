@@ -1,6 +1,10 @@
 import cameraCode
 import reynaPiNode
+import helpers
+import RPi.GPIO as GPIO
 import json
+from decimal import Decimal
+
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -8,15 +12,36 @@ import json
 # These fields are pending to be deprecated and should not be depended on.
 
 def picture(client, userdata, message):#TODO Implement callback funcitonality
-  cameraCode.takePicture()
-  #TODO something about s3 upload
-  return
+  bucketName = "senior-design-camera-files"
+  fileName = cameraCode.takePicture()
+  try:
+    helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
+  finally:
+    print("Taking picture and uploading to S3 bin")
+    return True
 
 def stream(client, userdata, message):#TODO Implement callback functionality
-  return NotImplementedError
+  return NotImplemented
 
 def video(client, userdata, message):#TODO Implement callback functionality
-  return NotImplementedError
+  return NotImplemented
+
+def controlFan(self, params, packet):
+  payloadDict = json.loads(packet.payload)
+  humidity = Decimal(payloadDict["humidity"])
+  print(packet.payload)
+  if (humidity > 85):
+    print("Fan is ON")
+    print("####")
+    GPIO.output(16, GPIO.LOW)
+    fanOn = True
+
+  else:
+    print("Fan is OFF")
+    print("####")
+    GPIO.output(16, GPIO.HIGH)
+    fanOn = False
+
 
 def ultrasonic(client, userdate, message):
   distance=0
@@ -48,6 +73,7 @@ subscribedTopicDictionary = {
   "video" : video,
   "ultrasonic" : ultrasonic,
   "motor2" : motor2
+  "controlFan" : controlFan
   #FIXME Find some way to not hardcode value names
 }
 

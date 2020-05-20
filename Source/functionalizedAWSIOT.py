@@ -6,6 +6,7 @@ import subprocess
 import time
 import subscriptionFunctions
 
+from helpers import getTimeStamp
 from defines import * #TODO Find a better way to do this
 
 CLIENT = "333052c1bf"
@@ -22,6 +23,7 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
   if topic == None:
     for t in TOPICS:
       callbackFunction = subscriptionFunctions.generateCallbackFunction(t)
+      print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
   else:
@@ -65,9 +67,6 @@ def AWS_MQTT_Initialize():
   AWS_MQTT_subscribe(myMQTTClient, None)
   myMQTTClient.publish(THING_NAME + "/info", "connected", 0)
   return myMQTTClient
-
-def getTimeStamp():
-  return str(time.strftime("%Y-%m-%d_%H:%M:%S"))
 
 def AWS_MQTT_publish(MQTTClient, topic, data):
     # if topic not in TOPICS:
