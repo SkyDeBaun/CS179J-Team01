@@ -29,11 +29,25 @@ def ultrasonic(client, userdate, message):
     reynaPiNode.go1()
     return 1
 
+def motor2(client, userdate, message):
+  humidity=0
+  payloadInfo = json.loads(message.payload)
+  humidity = payloadInfo["humidity"]
+  print("humidity:", str(humidity))
+  humidity = int(humidity)
+  if humidity < 65:
+   reynaPiNode.stop2()
+   return 0
+  else:
+   reynaPiNode.go2()
+   return 1
+
 subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
   "video" : video,
-  "ultrasonic" " : ultrasonic
+  "ultrasonic" : ultrasonic,
+  "motor2" : motor2
   #FIXME Find some way to not hardcode value names
 }
 
