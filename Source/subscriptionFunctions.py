@@ -1,5 +1,5 @@
 import cameraCode
-import MotorSub
+import reynaPiNode
 import json
 
 # Should be in form customCallback(client, userdata, message)
@@ -23,15 +23,17 @@ def ultrasonic(client, userdate, message):
   payloadInfo = json.load(message.payload)
   distance = payloadInfo["distance"]
   if distance<15:
-    MotorSub.stop()
+    reynaPiNode.stop1()
+    return 0
   else:
-    MotorSub.go()
+    reynaPiNode.go1()
+    return 1
 
 subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
   "video" : video,
-  "ReynaPi/ultrasonic" " : ReynaPi/ultrasonic
+  "ultrasonic" " : ultrasonic
   #FIXME Find some way to not hardcode value names
 }
 
