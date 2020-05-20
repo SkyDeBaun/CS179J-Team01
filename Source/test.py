@@ -3,6 +3,7 @@ import subscriptionFunctions
 import shadowFunctions
 import pytest #My local machine doesn't like this
 import inspect
+import json
 
 # content of test_sample.py
 # def func(x):
@@ -34,9 +35,19 @@ def test_publishFunctionSignatures(function):
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_publishFunctionSignatures(function):
   assert function(None, None, "test payload") != NotImplemented
+  
+data = {"distance":25}
+message = json.dump(data)
+expectedStatus = 1
 
-@pytest.mark.parametrize("message", "expectedStatus", [("", 1), ("", 0), ("", 1), ("", 0)]) #1 or 0 output from the ultrasonic callback function. Put the inputs in quotes
-def test_motorOperationBehaviour(message, expectedStatus):
-  #TODO Reyna
-  assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+@pytest.mark.parametrize("message", "expectedStatus", [("", 1), ("", 0), ("", 1), ("", 0)])
+def test_motorOperationBehaviourGO(message, expectedStatus):
+	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+
+data = {"distance":15}
+message = json.dump(data)
+expectedStatus = 0
+def test_motorOperationBehaviorStop(message,expectedStatus):
+	assert subscriptionFunctions.subscribedTopicDictionart["ultrasonic"](None, None, message)== expectedStatus
+
 

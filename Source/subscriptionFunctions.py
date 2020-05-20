@@ -1,8 +1,10 @@
 import cameraCode
+import reynaPiNode
 import helpers
 import RPi.GPIO as GPIO
 import json
 from decimal import Decimal
+
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
@@ -41,10 +43,36 @@ def controlFan(self, params, packet):
     fanOn = False
 
 
+def ultrasonic(client, userdate, message):
+  distance=0
+  payloadInfo = json.load(message.payload)
+  distance = payloadInfo["distance"]
+  if distance<15:
+    reynaPiNode.stop1()
+    return 0
+  else:
+    reynaPiNode.go1()
+    return 1
+
+def motor2(client, userdate, message):
+  humidity=0
+  payloadInfo = json.loads(message.payload)
+  humidity = payloadInfo["humidity"]
+  print("humidity:", str(humidity))
+  humidity = int(humidity)
+  if humidity < 65:
+   reynaPiNode.stop2()
+   return 0
+  else:
+   reynaPiNode.go2()
+   return 1
+
 subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
-  "video" : video, 
+  "video" : video,
+  "ultrasonic" : ultrasonic,
+  "motor2" : motor2
   "controlFan" : controlFan
   #FIXME Find some way to not hardcode value names
 }
