@@ -5,6 +5,7 @@ python:
 install:
   - pip install AWSIoTPythonSDK
   - pip install boto3
+  - pip install fake_rpi
 
 script:
 #  - python Tests/runTests.py
