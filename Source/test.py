@@ -56,5 +56,5 @@ def test_motorOperationBehaviour(message, expectedStatus):
 
 @pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
-        assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+  assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
 

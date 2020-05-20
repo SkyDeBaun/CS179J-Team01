@@ -71,9 +71,9 @@ subscribedTopicDictionary = {
   "picture" : picture,
   "stream" : stream,
   "video" : video,
+  "controlFan" : controlFan,
   "ultrasonic" : ultrasonic,
   "motor2" : motor2
-  "controlFan" : controlFan
   #FIXME Find some way to not hardcode value names
 }
 
