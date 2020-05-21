@@ -71,8 +71,6 @@ def test_motor2OperationBehaviour(message, expectedStatus):
 
 #Tests for DC fan below
 
-
-
 #Test data
 data1 = '{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }'
 data2 = '{ "temperature": ' + "40" + ',"humidity": '+ "100" + ' }'
