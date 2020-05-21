@@ -1,5 +1,5 @@
 import cameraCode
-import reynaPiNode
+#import reynaPiNode
 import helpers
 import RPi.GPIO as GPIO
 import json
@@ -34,13 +34,13 @@ def controlFan(self, params, packet):
     print("Fan is ON")
     print("####")
     GPIO.output(16, GPIO.LOW)
-    fanOn = True
+    return 1
 
   else:
     print("Fan is OFF")
     print("####")
     GPIO.output(16, GPIO.HIGH)
-    fanOn = False
+    return 0
 
 
 def ultrasonic(client, userdate, message):
