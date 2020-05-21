@@ -36,6 +36,14 @@ import json
 #
 #################################################################################
 
+#Mock class for packet
+class message:
+  payload = None
+  topic = None
+
+  def __init__(self, payload):
+    self.payload = payload
+
 functionList = list(subscriptionFunctions.subscribedTopicDictionary.values()) #Get the list of all callback functions
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions have the proper signature
@@ -44,7 +52,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, "test payload") != NotImplemented
+  assert function(None, None, message("Test payload")) != NotImplemented
 
 #test values for motor test messages as jsons
 #data1 = {"distance":25, "humidity":83}
@@ -66,12 +74,7 @@ def test_implementedCallbacks(function):
 
 #Tests for DC fan below
 
-#Mock class for packet
-class message:
-  payload = None
 
-  def __init__(self, payload):
-    self.payload = payload
 
 #Test data
 data1 = '{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }'
