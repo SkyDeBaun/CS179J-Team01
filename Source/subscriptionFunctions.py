@@ -64,8 +64,8 @@ def motor2(client, userdate, message):
 subscribedTopicDictionary = {
   "picture" : picture,
   "controlFan" : controlFan,
- # "ultrasonic" : ultrasonic,
- # "motor2" : motor2
+  "ultrasonic" : ultrasonic,
+  "motor2" : motor2
   #FIXME Find some way to not hardcode value names
 }
 
