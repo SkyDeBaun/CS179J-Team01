@@ -1,5 +1,5 @@
 import cameraCode
-#import reynaPiNode
+import reynaPiNode
 import helpers
 import RPi.GPIO as GPIO
 import json

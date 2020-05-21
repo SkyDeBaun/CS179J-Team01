@@ -105,7 +105,7 @@ def humidCallBack(self, params, packet):
         else:
                 go2()
 
-try:
+if __name__ == "__main__":
 	GPIO.setwarnings(False)
 	setup()
 
@@ -143,7 +143,7 @@ try:
 		myMQTTClient.subscribe("ryan_pi/data",1,humidCallBack)
 
 
-except KeyboardInterrupt:
+# except KeyboardInterrupt:
 		stop1()
 		stop2()
 		destroy()
