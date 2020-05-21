@@ -43,7 +43,7 @@ def test_publishFunctionSignatures(function):
   assert len(inspect.signature(function).parameters) == 3
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
-def test_publishFunctionSignatures(function):
+def test_implementedCallbacks(function):
   assert function(None, None, "test payload") != NotImplemented
 
 #test values for motor test messages as jsons
@@ -85,5 +85,5 @@ message4 = message(data4)
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
-        assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+  assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
 
