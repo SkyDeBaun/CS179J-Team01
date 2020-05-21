@@ -55,17 +55,16 @@ def test_implementedCallbacks(function):
   assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }')) != NotImplemented
 
 # test values for motor test messages as jsons
-data1 = {}
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
 message2 = message('{ "distance": ' + "10" + ',"humidity": '+ "62" + ' }')
 message3 = message('{ "distance": ' + "100" + ',"humidity": '+ "98" + ' }')
 message4 = message('{ "distance": ' + "7" + ',"humidity": '+ "30" + ' }')
 
-@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
 	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
-@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
  assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
 
