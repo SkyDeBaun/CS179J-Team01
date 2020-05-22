@@ -7,7 +7,6 @@
 #------------------------------------------------------------
 
 #aws iot-----------------------------------------------------
-from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 
 #GPIO--------------------------------------------------------
@@ -29,28 +28,6 @@ import string
 #function definitions-------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 
- # Callback function triggered when the topic subscribed to gets new published data
-# Callback function triggered when the topic subscribed to gets new published data
-def myCallBack(self, params, packet):
-        #print(packet.payload)
-        
-        payloadDict = json.loads(packet.payload)
-        global Temp
-        global Humidity
-        
-        Temp = payloadDict ["temperature"] #get value from JSON field        
-        Humidity = payloadDict["humidity"] #get value
-
-        print("Ryan's Sensor Data---------------------- ")
-        print("Temperature: " + str(Temp))
-        print("Humidity: " + str(Humidity))
-        print(" ")
-
-        if float(Humidity) > 85.0:
-            print ("HIGH HUMIDITY THRESHOLD*****************\n")        
-
-        print("")
-
 # Custom Shadow callback------------------------------------- update shadow
 def customShadowCallback_Update(payload, responseStatus, token):
     # payload is a JSON string ready to be parsed using json.loads(...)
@@ -63,14 +40,15 @@ def customShadowCallback_Update(payload, responseStatus, token):
         print("\nUPDATING THING SHADOW: " + str(payloadDict["state"]["desired"]["Time"]))
 
         #print only if not default value----------------------
-        myTemp = float(payloadDict["state"]["desired"]["Temperature"])        
+        myTemp = int(payloadDict["state"]["desired"]["Temperature"])        
         if (myTemp != -999):
-            print("Temperature: " + str(myTemp) + " C")
+            print("Temperature: " + str(myTemp))
         
         myLight = int(payloadDict["state"]["desired"]["Light"])
         if (myLight != -999):
-            print("Light level: " + str(myLight) + "%")
-        
+            print("Light level: " + str(myLight))
+
+
         #print("Update request with token: " + token + " accepted!")
         #print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
         #print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
@@ -108,8 +86,7 @@ def customShadowCallback_Delete(payload, responseStatus, token):
     if responseStatus == "accepted":
         #print("------------------------")
         #print("Delete request with token: " + token + " accepted!")
-        #print("DELETING THING SHADOW FROM THE CLOUD")
-        print("Refreshing Node Buffer")
+        print("DELETING THING SHADOW FROM THE CLOUD")
         print("\n")
     if responseStatus == "rejected":
         print("Delete request " + token + " rejected!") #no shadow to get!
@@ -133,7 +110,6 @@ def customShadowCallback_Delta(payload, responseStatus, token):
 def generateClient_ID(stringLength = 10):
     client_string = string.ascii_letters + string.digits
     return ''.join((random.choice(client_string) for i in range(stringLength)))
-
 
 # define our clear function 
 def clear(): 
@@ -162,25 +138,6 @@ private_key = "../Certificates/device-private.pem.key"
 certificate = "../Certificates/device-certificate.pem.crt"
 client_ID = generateClient_ID()
 thing_name = "Pi_sense01"
-
-
-
-#MQTT subscription/publication-----------------------------------------------
-Device_ID = "Pi_sense01"
-
-# AWS IoT certificate based connection---------------------------------------
-myMQTTClient = AWSIoTMQTTClient(Device_ID)#this can be any arbitrary string
-myMQTTClient.configureEndpoint(AWS_IoT_endpoint, port)#endpoint and port number
-myMQTTClient.configureCredentials(root_CA, private_key, certificate)#root ca and certificate used for secure connection
-
-myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
-myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
-myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
-myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
- 
-#connect and publish----------------------------------------------------------
-myMQTTClient.connect()
-#myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack) #moved to inside radio loop
 
 
 # Init AWSIoTMQTTShadowClient--------------------------------
@@ -228,13 +185,11 @@ numberNodes = 0 #save number of nodes on radio transceiver network
 temp = -999.00 #default start values
 lightLevel = -999
 
-Humidity = -999
-
 #default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
 
 
-#initialize radio transceiver------------------------------------------------------------
+#initialize radio tranceiver------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
     clear()
@@ -278,8 +233,8 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
                     sensorType = str(parse[0].replace(":","")) #clean junk from parsed string
 
                     if sensorType == "Temperature":
-                        temp = float(parse[1])
-                        temp = (temp/100.0) #convert to float (puts in decimal form)
+                        temp = int(parse[1])
+                        temp = temp/100 #convert to float (puts in decimal form)
 
                     elif sensorType == "Light":
                         lightLevel = parse[1].replace("%", "")
@@ -301,34 +256,16 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
         if up_counter > 2.0: #every 2 seconds
             up_counter = 0
 
+            clear() #refresh screen
+
             #list nodes in dictionary
-            print("--------------------------------------------------------------")
             print("TRANSCEIVER NODES ON THE NETWORK: " + str(len(sensorNodes)))
-            for key in sensorNodes:
-                print("Node " + key + ": " + str(sensorNodes[key]))                        
+            for val in sensorNodes:
+                print("Node " + val + ": " + sensorNodes[val])                        
 
             #update shadow -----------------------------------------------------
             if len(sensorNodes) > 0: #only send if 1 or more nodes
                 deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
-
-            #get subcription----------------------------------------------------
-            myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack)
-            myMQTTClient.subscribe("ryan_pi/data", 1, myCallBack)
-            #print("Humidity: " + str(float(Humidity)))
-
-            if float(Humidity) > 80:
-                if radio.send(21, "1", attempts=2, waitTime=100):
-                    #print ("LED Control Message -> On")
-                    print("") #stupid -> python complains if above print line commented (inside if statement)
-                else:
-                    #print ("LED Control Message -> No Acknowledgement")
-                    print("")
-            else:
-                if radio.send(21, "0", attempts=2, waitTime=100):
-                    #print ("LED Control Message -> Off")
-                    print("")
-
-            
 
 
         #reset dict on nodes----------------------------------------------------
