@@ -47,8 +47,7 @@ def myCallBack(self, params, packet):
         print(" ")
 
         if float(Humidity) > 85.0:
-            print ("HIGH HUMIDITY THRESHOLD*****************\n")
-        
+            print ("HIGH HUMIDITY THRESHOLD*****************\n")        
 
         print("")
 
@@ -71,8 +70,7 @@ def customShadowCallback_Update(payload, responseStatus, token):
         myLight = int(payloadDict["state"]["desired"]["Light"])
         if (myLight != -999):
             print("Light level: " + str(myLight) + "%")
-
-
+        
         #print("Update request with token: " + token + " accepted!")
         #print("Temperature: " + str(payloadDict["state"]["desired"]["Temperature"]))
         #print("Light level: " + str(payloadDict["state"]["desired"]["Light"]))
@@ -136,6 +134,7 @@ def generateClient_ID(stringLength = 10):
     client_string = string.ascii_letters + string.digits
     return ''.join((random.choice(client_string) for i in range(stringLength)))
 
+
 # define our clear function 
 def clear(): 
   
@@ -167,7 +166,6 @@ thing_name = "Pi_sense01"
 
 
 #MQTT subscription/publication-----------------------------------------------
-
 Device_ID = "Pi_sense01"
 
 # AWS IoT certificate based connection---------------------------------------
@@ -182,10 +180,7 @@ myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
  
 #connect and publish----------------------------------------------------------
 myMQTTClient.connect()
-#myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack)
-
-
-
+#myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack) #moved to inside radio loop
 
 
 # Init AWSIoTMQTTShadowClient--------------------------------
@@ -239,7 +234,7 @@ Humidity = -999
 JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
 
 
-#initialize radio tranceiver------------------------------------------------------------
+#initialize radio transceiver------------------------------------------------------------
 #---------------------------------------------------------------------------------------
 with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
     clear()
@@ -284,9 +279,7 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
 
                     if sensorType == "Temperature":
                         temp = float(parse[1])
-                        #print("WFT: " + str(temp))
                         temp = (temp/100.0) #convert to float (puts in decimal form)
-                        #print("WFT: " + str(temp))
 
                     elif sensorType == "Light":
                         lightLevel = parse[1].replace("%", "")
@@ -308,8 +301,6 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
         if up_counter > 2.0: #every 2 seconds
             up_counter = 0
 
-            #clear() #refresh screen
-
             #list nodes in dictionary
             print("--------------------------------------------------------------")
             print("TRANSCEIVER NODES ON THE NETWORK: " + str(len(sensorNodes)))
@@ -320,12 +311,10 @@ with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True
             if len(sensorNodes) > 0: #only send if 1 or more nodes
                 deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
 
-            #get subcription
-
-
+            #get subcription----------------------------------------------------
             myMQTTClient.subscribe("Pi_sense01/data", 1, myCallBack)
             myMQTTClient.subscribe("ryan_pi/data", 1, myCallBack)
-            print("Humidity: " + str(float(Humidity)))
+            #print("Humidity: " + str(float(Humidity)))
 
             if float(Humidity) > 80:
                 if radio.send(21, "1", attempts=2, waitTime=100):
