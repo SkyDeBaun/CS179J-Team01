@@ -10,7 +10,9 @@ import shadowFunctions
 import pytest #My local machine doesn't like this
 import inspect
 import json
-
+import boto3
+from temperatureHumidity import createTable
+from temperatureHumidity import deleteTable
 # content of test_sample.py
 # def func(x):
 #     return x + 1
@@ -36,6 +38,14 @@ import json
 #
 #################################################################################
 
+#Mock class for packet
+class message:
+  payload = None
+  topic = None
+
+  def __init__(self, payload):
+    self.payload = payload
+
 functionList = list(subscriptionFunctions.subscribedTopicDictionary.values()) #Get the list of all callback functions
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions have the proper signature
@@ -43,35 +53,24 @@ def test_publishFunctionSignatures(function):
   assert len(inspect.signature(function).parameters) == 3
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
-def test_publishFunctionSignatures(function):
-  assert function(None, None, "test payload") != NotImplemented
+def test_implementedCallbacks(function):
+  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }')) != NotImplemented
 
-#test values for motor test messages as jsons
-#data1 = {"distance":25, "humidity":83}
-#message1 = json.dump(data1)
-#data2 = {"distance":10, "humidity":62}
-#message2 = json.dump(data2)
-#data3 = {"distance":100, "humidity":98}
-#message3=json.dump(data3)
-#data4 = {"distance":7, "humidity":30}
-#message4 = json.dump(data4)
+# test values for motor test messages as jsons
+message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
+message2 = message('{ "distance": ' + "10" + ',"humidity": '+ "62" + ' }')
+message3 = message('{ "distance": ' + "100" + ',"humidity": '+ "98" + ' }')
+message4 = message('{ "distance": ' + "7" + ',"humidity": '+ "30" + ' }')
 
-#@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
-#def test_motorOperationBehaviour(message, expectedStatus):
-#	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+def test_motorOperationBehaviour(message, expectedStatus):
+	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
-#@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
-#def test_motor2OperationBehaviour(message, expectedStatus):
-#  assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+def test_motor2OperationBehaviour(message, expectedStatus):
+ assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
 
 #Tests for DC fan below
-
-#Mock class for packet
-class message:
-  payload = None
-
-  def __init__(self, payload):
-    self.payload = payload
 
 #Test data
 data1 = '{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }'
@@ -85,5 +84,24 @@ message4 = message(data4)
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
-        assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+  assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+
+# Test createTable() function for DynamoDB
+# This test requires table "tableToCreate" does not exist in DynamoDB beforehand.
+def test_createDynamoTable():
+  tableName = "tableToCreate"
+  primaryColumnName = "testPrimaryKey"
+  columns = ["testColumn1", "testColumn2"]
+  DB = boto3.resource("dynamodb")
+  testTable = createTable(DB, tableName, primaryColumnName, columns)
+  assert testTable.table_status == "CREATING"
+
+# Test deleteTable() function for DynamoDB
+# This test requires table "tableToDelete" exists in DynamoDB beforehand.
+def test_deleteDynamoTable():
+  tableName = "tableToDelete"
+  DB = boto3.resource("dynamodb")
+  testTable = DB.Table("tableToDelete")
+  testTable = deleteTable(testTable)
+  assert testTable.table_status == "DELETING"
 

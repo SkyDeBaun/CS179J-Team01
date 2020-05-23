@@ -58,7 +58,11 @@ def createTable(DB, tableName, primaryColumnName, columns):
     )
     return table
 
-# Publication function for tripwire 
+def deleteTable(table):
+    table.delete()
+    return table
+
+# Publication function for tripwire
 def tripwireTriggered(ev=None):
     test = "does not matter"
     payload = test
@@ -97,45 +101,49 @@ if __name__ == "__main__":
     oldTable = DB.Table(tableName)
 
     # Delete existing table
-    oldTable.delete()
-
+    oldTable = deleteTable(oldTable)
+    print(oldTable.table_status)
     sleep(3)
     print("OLD TABLE DELETED")
-
+    print(oldTable.table_status)
     # Create new table
     newTable = createTable(DB, tableName, primaryColumnName, columns)
+    print(newTable.table_status)
+
 
     sleep(5)
     print("NEW TABLE CREATED")
-
+    print(newTable.table_status)
     # test insert row with entryNumber of 1
     entryNumber = 1
-    while True:
-        temperature = None
-        humidity = None
-        humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-        if humidity is not None and temperature is not None:
+    try:
+        while True:
+            temperature = None
+            humidity = None
+            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+            if humidity is not None and temperature is not None:
 
-            temperature = Decimal(temperature)
-            temperature = round(temperature, 2)
-            humidity = Decimal(humidity)
-            humidity = round(humidity, 2)
-            print(f"Temperature: {temperature}, Humidity: {humidity}")
-            print("####")
-            insertRow(newTable, columns, primaryColumnName, entryNumber, temperature, humidity)
-            now = datetime.utcnow()
-            now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-            payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
-            myMQTTClient.publish("ryan_pi/data", payload, 0)
+                temperature = Decimal(temperature)
+                temperature = round(temperature, 2)
+                humidity = Decimal(humidity)
+                humidity = round(humidity, 2)
+                print(f"Temperature: {temperature}, Humidity: {humidity}")
+                print("####")
+                insertRow(newTable, columns, primaryColumnName, entryNumber, temperature, humidity)
+                now = datetime.utcnow()
+                now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+                payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
+                myMQTTClient.publish("ryan_pi/data", payload, 0)
+                print(newTable.table_status)
+            else:
+                print("Failed to retrieve data from humidity sensor")
 
-        else:
-            print("Failed to retrieve data from humidity sensor")
+            entryNumber = entryNumber + 1
+            #if (entryNumber == 10):
+            #    break
 
-        entryNumber = entryNumber + 1
-        #if (entryNumber == 10):
-        #    break
+            sleep(2)
 
-        sleep(2)
-
-    # print all our rows
-    printAllRows(newTable, primaryColumnName)
+    except KeyboardInterrupt:
+       print("Exiting program") 
+       GPIO.cleanup()
