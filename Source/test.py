@@ -52,7 +52,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }')) != NotImplemented
+  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
 
 # test values for motor test messages as jsons
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
