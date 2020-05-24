@@ -19,14 +19,58 @@ import random
 import string
 
 
-
-
 #main function-----------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
     
     myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
 
+    print("hello worldz!")
 
-    while (1):
-        print("hello what the f*^*")
+
+    #radio tranceiver configuration---------------------------------------------------------
+#---------------------------------------------------------------------------------------
+node_id = 1 #hub node (this)
+network_id = 100 # 1 - 255
+key = "sampleEncryptKey" #must be shared accross all radios on the radio net
+
+rx_counter = 0.0 #timer counter for checking for incoming data packet
+tx_counter = 0.0 #timer counter 
+up_counter = 0.0 #update counter
+node_counter = 0.0 #when to refresh node counter
+
+sender = 0 #ID of transmitter
+receiver = 0 #ID of receiver
+data = [] #temp list for grabbing sensor values
+sensorNodes = {} #store discovered active nodes on the radio net into a list
+numberNodes = 0 #save number of nodes on radio transceiver network
+
+temp = -999.00 #default start values
+lightLevel = -999
+
+Humidity = -999
+
+#default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
+JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + str(-999) + '"}}}'
+
+
+#initialize radio transceiver------------------------------------------------------------
+#---------------------------------------------------------------------------------------
+with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
+    #clear()
+    print ("INITIALIZING RADIO TRANSCEIVER NETWORK:\n\n")
+    time.sleep(0.5)
+
+    while True:
+
+        print ("hello wtf?")
+
+        delay = 0.5 #1/2 second interval
+        rx_counter += delay
+        tx_counter += delay
+        up_counter += delay
+        node_counter += delay
+
+        time.sleep(delay)
+
+
