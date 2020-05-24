@@ -4,6 +4,7 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from datetime import date, datetime
 import json
 
+
 #Pin for motor driver
 Motor1A = 10 #GPIO12
 Motor1B = 19 #GPIO16
@@ -86,7 +87,6 @@ def sensor(Trig,Echo):
 
 
 def distCallBack(self, params,packet):
-	global distance
 	payloadInfo = json.loads(packet.payload)
 	distance = payloadInfo["distance"]
 	if distance <15:
@@ -95,7 +95,6 @@ def distCallBack(self, params,packet):
 		go1()
 
 def humidCallBack(self, params, packet):
-        global humidity
         payloadInfo = json.loads(packet.payload)
         humidity = payloadInfo["humidity"]
         print("humidity:", str(humidity))
@@ -105,45 +104,49 @@ def humidCallBack(self, params, packet):
         else:
                 go2()
 
-if __name__ == "__main__":
-	GPIO.setwarnings(False)
-	setup()
+if __name__ == "__main__" :
 
-	#AwsReyna ultrasonic connection
-	myMQTTClient = AWSIoTMQTTClient("ReynaPI")
-	myMQTTClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com",8883)
-	myMQTTClient.configureCredentials("/home/pi/Certificates/rootCA.pem","/home/pi/Certificates/d626c8c838-private.pem.key","/home/pi/Certificates/d626c8c838-certificate.pem.crt")
-	#myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
-	myMQTTClient.configureOfflinePublishQueueing(-1)
-	myMQTTClient.configureDrainingFrequency(2)
-	myMQTTClient.configureConnectDisconnectTimeout(10)
-	myMQTTClient.configureMQTTOperationTimeout(5)
-	myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
+	try:
+		GPIO.setwarnings(False)
+		setup()
 
-	#connect
-	myMQTTClient.connect()
-	distance=0
-	humidity=0
+		#AwsReyna ultrasonic connection
+		myMQTTClient = AWSIoTMQTTClient("ReynaPI")
+		myMQTTClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com",8883)
+		myMQTTClient.configureCredentials("/home/pi/Certificates/rootCA.pem","/home/pi/Certificates/d626c8c838-private.pem.key","/home/pi/Certificates/d626c8c838-certificate.pem.crt")
+		#myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
+		myMQTTClient.configureOfflinePublishQueueing(-1)
+		myMQTTClient.configureDrainingFrequency(2)
+		myMQTTClient.configureConnectDisconnectTimeout(10)
+		myMQTTClient.configureMQTTOperationTimeout(5)
+		myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
 
-	while True:
+		#connect
+		myMQTTClient.connect()
 
-		#publish sensor data to ReynaPi/ultrasonic
-		#get the timestamp
-		now = datetime.utcnow()
-		now_str = now.strftime('%Y-%m-%dT%H:%M%SZ')
-		#get distance from ultrasonic sensor
-		dis = sensor(Trig,Echo)
-		payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
-		#print(payload)
-		#publish data to AWS topic ReynaPi/ultrasonic
-		myMQTTClient.publish("ReynaPi/ultrasonic",payload,0)
+		while True:
 
-		#subscribe to ReynaPi/ultrasonic and ryan_pi/data using callback functions
-		myMQTTClient.subscribe("ReynaPi/ultrasonic",1,distCallBack)
-		myMQTTClient.subscribe("ryan_pi/data",1,humidCallBack)
+			#publish sensor data to ReynaPi/ultrasonic
+			#get the timestamp
+			now = datetime.utcnow()
+			now_str = now.strftime('%Y-%m-%dT%H:%M%SZ')
+			#get distance from ultrasonic sensor
+			dis = sensor(Trig,Echo)
+			payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
+
+			#publish data to AWS topic ReynaPi/ultrasonic
+			myMQTTClient.publish("ReynaPi/ultrasonic",payload,0)
+
+			#subscribe to ReynaPi/ultrasonic and ryan_pi/data using callback functions
+			myMQTTClient.subscribe("ReynaPi/ultrasonic",1,distCallBack)
+			myMQTTClient.subscribe("ryan_pi/data",1,humidCallBack)
 
 
-# except KeyboardInterrupt:
+	except KeyboardInterrupt:
+		stop1()
+		stop2()
+
+	finally:
 		stop1()
 		stop2()
 		destroy()
