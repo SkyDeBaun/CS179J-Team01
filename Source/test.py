@@ -36,6 +36,14 @@ import json
 #
 #################################################################################
 
+#Mock class for packet
+class message:
+  payload = None
+  topic = None
+
+  def __init__(self, payload):
+    self.payload = payload
+
 functionList = list(subscriptionFunctions.subscribedTopicDictionary.values()) #Get the list of all callback functions
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions have the proper signature
@@ -43,24 +51,36 @@ def test_publishFunctionSignatures(function):
   assert len(inspect.signature(function).parameters) == 3
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
-def test_publishFunctionSignatures(function):
-  assert function(None, None, "test payload") != NotImplemented
+def test_implementedCallbacks(function):
+  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
 
-#test values for motor test messages as jsons
-data1 = {"distance":25, "humidity":83}
-message1 = json.dump(data1)
-data2 = {"distance":10, "humidity":62}
-message2 = json.dump(data2)
-data3 = {"distance":100, "humidity":98}
-message3=json.dump(data3)
-data4 = {"distance":7, "humidity":30}
-message4 = json.dump(data4)
+# test values for motor test messages as jsons
+message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
+message2 = message('{ "distance": ' + "10" + ',"humidity": '+ "62" + ' }')
+message3 = message('{ "distance": ' + "100" + ',"humidity": '+ "98" + ' }')
+message4 = message('{ "distance": ' + "7" + ',"humidity": '+ "30" + ' }')
 
-@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
 	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
-@pytest.mark.parametrize("message", "expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
-  assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+ assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+
+#Tests for DC fan below
+
+#Test data
+data1 = '{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }'
+data2 = '{ "temperature": ' + "40" + ',"humidity": '+ "100" + ' }'
+data3 = '{ "temperature": ' + "15" + ',"humidity": '+ "86" + ' }'
+data4 = '{ "temperature": ' + "99" + ',"humidity": '+ "84" + ' }'
+message1 = message(data1)
+message2 = message(data2)
+message3 = message(data3)
+message4 = message(data4)
+
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
+def test_fanOperational(message, expectedStatus):
+  assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
 

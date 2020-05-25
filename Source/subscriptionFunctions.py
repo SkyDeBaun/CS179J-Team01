@@ -11,20 +11,14 @@ from decimal import Decimal
 # Note that client and userdata are here just to be aligned with the underneath Paho callback function signature.
 # These fields are pending to be deprecated and should not be depended on.
 
-def picture(client, userdata, message):#TODO Implement callback funcitonality
+def picture(client, userdata, message):
   bucketName = "senior-design-camera-files"
-  fileName = cameraCode.takePicture()
   try:
+    fileName = cameraCode.takePicture()
     helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   finally:
     print("Taking picture and uploading to S3 bin")
     return True
-
-def stream(client, userdata, message):#TODO Implement callback functionality
-  return NotImplemented
-
-def video(client, userdata, message):#TODO Implement callback functionality
-  return NotImplemented
 
 def controlFan(self, params, packet):
   payloadDict = json.loads(packet.payload)
@@ -34,18 +28,18 @@ def controlFan(self, params, packet):
     print("Fan is ON")
     print("####")
     GPIO.output(16, GPIO.LOW)
-    fanOn = True
+    return 1
 
   else:
     print("Fan is OFF")
     print("####")
     GPIO.output(16, GPIO.HIGH)
-    fanOn = False
+    return 0
 
 
 def ultrasonic(client, userdate, message):
   distance=0
-  payloadInfo = json.load(message.payload)
+  payloadInfo = json.loads(message.payload)
   distance = payloadInfo["distance"]
   if distance<15:
     reynaPiNode.stop1()
@@ -69,8 +63,6 @@ def motor2(client, userdate, message):
 
 subscribedTopicDictionary = {
   "picture" : picture,
-  "stream" : stream,
-  "video" : video,
   "controlFan" : controlFan,
   "ultrasonic" : ultrasonic,
   "motor2" : motor2
