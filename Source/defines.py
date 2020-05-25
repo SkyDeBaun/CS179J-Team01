@@ -4,9 +4,10 @@
 
 DEVICE_TYPE = "MotorController"
 THING_NAME = "reynaPi"
-TOPICS = ["ultrasonic", "motor2"]
-
-# DEVICE_TYPE = "FanController"
+#subscribed topics for device type and thing name
+TOPICS = ["ultrasonic"]
+ 
+# DEVICE_TYPE "FanController"
 # THING_NAME = "RyanPi"
 # TOPICS = ["picture", "stream", "video"]
 

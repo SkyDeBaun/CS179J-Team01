@@ -110,8 +110,8 @@ if __name__ == "__main__" :
 			#publish data to AWS topic ReynaPi/ultrasonic
 			functionalizedAWSIOT.AWS_MQTT_publish(myMQTTClient,TOPICS[0],payload)
 
-			#subscribe to ReynaPi/ultrasonic and ryan_pi/data using callback functions
-			#myMQTTClient.subscribe("ReynaPi/ultrasonic",1,subscriptionFunctions.ultrasonic)
+			#subscribe ryan_pi/data using callback functions from subscriptionFunctions
+			#already subscribed to MotorController/reynaPi/ultrasonic
 			myMQTTClient.subscribe("ryan_pi/data",1,subscriptionFunctions.motor2)
 
 
