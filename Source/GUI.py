@@ -12,10 +12,10 @@ import matplotlib
 from decimal import Decimal
 matplotlib.use("TkAgg")
 
-
 class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
+        global dynamicButton
 
         tk.Frame.__init__(self, parent)
         button1 = ttk.Button(self, text="Reset Graphs", command=reset_graphs)
@@ -39,6 +39,7 @@ class StartPage(tk.Frame):
         button8.pack()
         button9 = ttk.Button(self, text="Exit Program", command=quitProgram)
         button9.pack()
+  
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -73,10 +74,11 @@ temperatureGraph_x = []
 temperatureGraph_y = []
 humidityGraph_x = []
 humidityGraph_y = []
+time = 0
 
 # Set up our plots
 fig = plt.figure(figsize=(6, 4))
-fig.suptitle("Extensible Sensor Network", fontsize=16)
+fig.suptitle("Temperature Average: Waiting...        Humidity Average: Waiting...", fontsize=16)
 sub1 = plt.subplot(2, 2, 1)
 sub2 = plt.subplot(2, 2, 2)
 #sub3 = plt.subplot(2, 2, 3)
@@ -106,6 +108,7 @@ def animate(i):
     global temperatureGraph_y
     global humidityGraph_x
     global humidityGraph_y
+    global dynamicButton
 
     # Simple variable check to see if we pause graphing or not
     if (pause_start == 0):
@@ -119,12 +122,22 @@ def animate(i):
 
         sub2.plot(humidityGraph_x, humidityGraph_y, color='red')
         sub2.set_xlim(left=max(0, entryCount - 50), right=entryCount + 25)
-
+        
+    # Increment time
+    time = time + 1
+    # Update averages every 5 seconds
+    updateDynamicButton(time)
+        
 
 # Reset Graph Data
 def reset_graphs():
     global sub1
     global sub2
+    global entryCount
+    global temperatureGraph_x
+    global temperatureGraph_y
+    global humidityGraph_x
+    global humidityGraph_y
 
     sub1.clear()
     sub2.clear()
@@ -134,6 +147,11 @@ def reset_graphs():
     sub2.set_title("Humidity vs. Entries")
     sub2.set_ylabel("Humidity (Percentage)")
     sub2.set_xlabel("Entries")
+    entryCount = 0
+    temperatureGraph_x.clear()
+    temperatureGraph_y.clear()
+    humidityGraph_x.clear()
+    humidityGraph_y.clear()
 
 # Function to start or pause graphs
 def pause_start_graphs():
@@ -150,23 +168,37 @@ def HumidityTempUpdate(self, params, packet):
     global temperatureGraph_y
     global humidityGraph_x
     global humidityGraph_y
+    global pause_start
 
-    payloadDict = json.loads(packet.payload)
+    # Only want to do anything with data if graphs are not paused 
+    if (pause_start == 0):
+        payloadDict = json.loads(packet.payload)
 
-    Temp = Decimal(payloadDict["temperature"])
-    Temp = round(Temp, 2)
-    Humidity = Decimal(payloadDict["humidity"])
-    Humidity = round(Humidity, 2)
+        Temp = Decimal(payloadDict["temperature"])
+        Temp = round(Temp, 2)
+        Humidity = Decimal(payloadDict["humidity"])
+        Humidity = round(Humidity, 2)
 
-    # Increment total number of entries stored in program
-    entryCount = entryCount + 1
+        # Increment total number of entries stored in program
+        entryCount = entryCount + 1
 
-    # Push values to arrays for plotting
-    temperatureGraph_y.append(Temp)
-    temperatureGraph_x.append(entryCount)
-    humidityGraph_y.append(Humidity)
-    humidityGraph_x.append(entryCount)
+        # Push values to arrays for plotting
+        temperatureGraph_y.append(Temp)
+        temperatureGraph_x.append(entryCount)
+        humidityGraph_y.append(Humidity)
+        humidityGraph_x.append(entryCount)
 
+
+def updateDynamicButton(time):
+    global fig
+    if (time % 5 == 0): 
+        tempAvg = 5 * time
+        humAvg = 10 * time
+        averageString = f"Temperature Average: {tempAvg}        Humidity Average: {humAvg}"
+        fig.suptitle(averageString, fontsize=16)
+        
+        
+        
 
 def toggleFanControl():
     myMQTTClient.publish("RyanPi/ryan_pi/GUItoggleFanControl",
