@@ -28,13 +28,35 @@ class StartPage(tk.Frame):
 
         button2.pack()
 
-        button3 = ttk.Button(self, text="Publish Test", command=test)
-
+        button3 = ttk.Button(self, text="Toggle Fan Control",
+                             command=toggleFanControl)
+                            
         button3.pack()
 
-        button4 = ttk.Button(self, text="Exit Program", command=quitProgram)
+        button4 = ttk.Button(self, text="Turn Fan On", command=turnOnFan)
 
         button4.pack()
+
+        button5 = ttk.Button(self, text="Turn Fan Off", command=turnOffFan)
+
+        button5.pack()
+        
+        button6 = ttk.Button(self, text="Toggle Motor Control",
+                             command=toggleFanControl)
+                            
+        button6.pack()
+        
+        button7 = ttk.Button(self, text="Turn Motor On", command=turnOffFan)
+
+        button7.pack()
+        
+        button8 = ttk.Button(self, text="Turn Motor Off", command=turnOffFan)
+
+        button8.pack()
+
+        button9 = ttk.Button(self, text="Exit Program", command=quitProgram)
+
+        button9.pack()
 
         canvas = FigureCanvasTkAgg(fig, self)
 
@@ -103,18 +125,17 @@ sub2.set_title("Humidity vs. Entries")
 sub2.set_ylabel("Humidity (Percentage)")
 sub2.set_xlabel("Entries")
 
-#Plot once to set labels 
-sub1.plot(temperatureGraph_x, temperatureGraph_y, color='blue', label = 'Temperature')
+# Plot once to set labels
+sub1.plot(temperatureGraph_x, temperatureGraph_y,
+          color='blue', label='Temperature')
 sub1.legend(loc='upper right')
-sub1.set_xlim(left=max(0, entryCount - 50), right = entryCount + 25)
+sub1.set_xlim(left=max(0, entryCount - 50), right=entryCount + 25)
 
-sub2.plot(humidityGraph_x, humidityGraph_y, color='red', label = 'Humidity')
+sub2.plot(humidityGraph_x, humidityGraph_y, color='red', label='Humidity')
 sub2.legend(loc='upper right')
-sub2.set_xlim(left=max(0, entryCount - 50), right = entryCount + 25)
+sub2.set_xlim(left=max(0, entryCount - 50), right=entryCount + 25)
 
 # Animation function to update plot
-
-
 def animate(i):
     global pause_start
     global time
@@ -122,33 +143,26 @@ def animate(i):
     global temperatureGraph_y
     global humidityGraph_x
     global humidityGraph_y
-    c0stateS1 = None
-    c3stateS1 = None
-    c6stateS1 = None
-    c0stateS0 = None
-    c3stateS0 = None
-    c6stateS0 = None
-    powerS1 = None
-    powerS0 = None
 
+    # Simple variable check to see if we pause graphing or not
     if (pause_start == 0):
-        
+
         print("temp arrays: ")
         print(temperatureGraph_x)
         print(temperatureGraph_y)
-        
-        sub1.plot(temperatureGraph_x, temperatureGraph_y, color = 'blue')
-        sub1.set_xlim(left=max(0, entryCount - 50), right = entryCount + 25)
-            
-        sub2.plot(humidityGraph_x, humidityGraph_y, color = 'red')
-        sub2.set_xlim(left=max(0, entryCount - 50), right = entryCount + 25)
+
+        sub1.plot(temperatureGraph_x, temperatureGraph_y, color='blue')
+        sub1.set_xlim(left=max(0, entryCount - 50), right=entryCount + 25)
+
+        sub2.plot(humidityGraph_x, humidityGraph_y, color='red')
+        sub2.set_xlim(left=max(0, entryCount - 50), right=entryCount + 25)
 
 
 # Reset Graph Data
 def reset_graphs():
     global sub1
     global sub2
-  
+
     sub1.clear()
     sub2.clear()
     sub1.set_title("Temperature vs. Entries")
@@ -158,9 +172,7 @@ def reset_graphs():
     sub2.set_ylabel("Humidity (Percentage)")
     sub2.set_xlabel("Entries")
 
-# Simple change of pause_start value that is checked in animate function
-
-
+# Function to start or pause graphs
 def pause_start_graphs():
     global pause_start
     if (pause_start == 1):
@@ -175,28 +187,43 @@ def HumidityTempUpdate(self, params, packet):
     global temperatureGraph_y
     global humidityGraph_x
     global humidityGraph_y
-    
+
     payloadDict = json.loads(packet.payload)
 
     Temp = Decimal(payloadDict["temperature"])
     Temp = round(Temp, 2)
     Humidity = Decimal(payloadDict["humidity"])
     Humidity = round(Humidity, 2)
-    
+
     # Increment total number of entries stored in program
     entryCount = entryCount + 1
-    
+
     # Push values to arrays for plotting
     temperatureGraph_y.append(Temp)
     temperatureGraph_x.append(entryCount)
     humidityGraph_y.append(Humidity)
     humidityGraph_x.append(entryCount)
-    
-    
 
-def test():
-    myMQTTClient.publish("ryan_pi/data", "doesn't matter", 0)
 
+def toggleFanControl():
+    myMQTTClient.publish("RyanPi/ryan_pi/GUItoggleFanControl",
+                         "payload doesn't matter", 0)
+
+def toggleMotorControl():
+    print("Not done yet")
+
+def turnOnFan():
+    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOnFan", "payload doesn't matter", 0)
+
+
+def turnOffFan():
+    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOffFan", "payload doesn't matter", 0)
+
+def turnMotorOn():
+    print("Not done yet")
+
+def turnMotorOff(): 
+    print("Not done yet")
 
 def quitProgram():
     exit()
@@ -217,7 +244,7 @@ if __name__ == "__main__":
         myMQTTClient.configureMQTTOperationTimeout(5)
         myMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
         myMQTTClient.connect()
-        myMQTTClient.subscribe("ryan_pi/data", 1, HumidityTempUpdate)
+        myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, HumidityTempUpdate)
 
         app = graphApp()
         app.minsize(1000, 800)
