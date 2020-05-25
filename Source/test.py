@@ -83,3 +83,4 @@ message4 = message(data4)
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+
