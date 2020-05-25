@@ -1,4 +1,4 @@
-import cameraCode
+#import cameraCode
 import reynaPiNode
 import helpers
 import RPi.GPIO as GPIO
