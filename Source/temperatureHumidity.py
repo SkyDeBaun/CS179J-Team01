@@ -162,7 +162,7 @@ if __name__ == "__main__":
                 now = datetime.utcnow()
                 now_str = now.strftime('%Y-%m-%d %H:%M:%S')
                 payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
-                myMQTTClient.publish("ryan_pi/data", payload, 0)
+                myMQTTClient.publish("RyanPi/ryan_pi/data", payload, 0)
             else:
                 print("Failed to retrieve data from humidity sensor")
 
