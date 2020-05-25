@@ -18,88 +18,51 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-
         button1 = ttk.Button(self, text="Reset Graphs", command=reset_graphs)
-
         button1.pack()
-
         button2 = ttk.Button(self, text="Pause/Start Graphs",
                              command=pause_start_graphs)
-
         button2.pack()
-
         button3 = ttk.Button(self, text="Toggle Fan Control",
                              command=toggleFanControl)
-                            
         button3.pack()
-
         button4 = ttk.Button(self, text="Turn Fan On", command=turnOnFan)
-
         button4.pack()
-
         button5 = ttk.Button(self, text="Turn Fan Off", command=turnOffFan)
-
         button5.pack()
-        
         button6 = ttk.Button(self, text="Toggle Motor Control",
                              command=toggleFanControl)
-                            
         button6.pack()
-        
         button7 = ttk.Button(self, text="Turn Motor On", command=turnOffFan)
-
         button7.pack()
-        
         button8 = ttk.Button(self, text="Turn Motor Off", command=turnOffFan)
-
         button8.pack()
-
         button9 = ttk.Button(self, text="Exit Program", command=quitProgram)
-
         button9.pack()
-
         canvas = FigureCanvasTkAgg(fig, self)
-
         canvas.draw()
-
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
         toolbar = NavigationToolbar2Tk(canvas, self)
-
         toolbar.update()
-
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
 
 class graphApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
 
         root = tk.Tk.__init__(self, *args, **kwargs)
-
         tk.Tk.wm_title(self, "Extensible Sensor Network")
-
         container = tk.Frame(self)
-
         container.pack(side="top", fill="both", expand=True)
-
         container.grid_rowconfigure(0, weight=5)
         container.grid_columnconfigure(0, weight=5)
-
         self.frames = {}
-
         frame = StartPage(container, self)
-
         self.frames[StartPage] = frame
-
         frame.grid(row=0, column=0, sticky="nsew")
-
         self.show_frame(StartPage)
-
     def show_frame(self, cont):
-
         frame = self.frames[cont]
-
         frame.tkraise()
 
 
