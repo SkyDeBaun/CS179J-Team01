@@ -91,7 +91,10 @@ if __name__ == "__main__":
 
     # Initialize MQTT client
     myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-    myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.controlFan)
+    myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, subscriptionFunctions.controlFan)
+    #myMQTTClient.subscribe("ryan_pi/GUItoggleFanControl", 1, subscriptionFunctions.GUItoggleFanControl)
+    #myMQTTClient.subscribe("ryan_pi/GUIturnOffFan", 1, subscriptionFunctions.GUIturnOffFan)
+    #myMQTTClient.subscribe("ryan_pi/GUIturnOnFan", 1, subscriptionFunctions.GUIturnOnFan)
 
     # GPIO set up
     GPIO.setmode(GPIO.BCM)
@@ -169,6 +172,15 @@ if __name__ == "__main__":
             sleep(2)
 
     except KeyboardInterrupt:
-       print("Exiting program")
+       print("Keyboard interrupt, exiting program")
        GPIO.cleanup()
 
+    except:
+        print("Error, exiting program")
+        GPIO.cleanup()
+        exit()
+
+    finally:
+        print("Catch all executed")
+        GPIO.cleanup()
+        exit()
