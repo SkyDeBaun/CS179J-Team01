@@ -4,7 +4,7 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTThingJobsClient
 
 import subprocess
 import time
-import subscriptionFunctions
+#import subscriptionFunctions
 
 from helpers import getTimeStamp
 from defines import * #TODO Find a better way to do this
@@ -22,7 +22,7 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
     for t in TOPICS:
-      callbackFunction = subscriptionFunctions.generateCallbackFunction(t)
+      #callbackFunction = subscriptionFunctions.generateCallbackFunction(t)
       print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")

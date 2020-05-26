@@ -8,15 +8,16 @@ import pytest
 import functionalizedAWSIOT
 import helpers
 from time import sleep
-import subscriptionFunctions
+from subscriptionFunctions import testCallbackFunction
+from subscriptionFunctions import GLOBAL_TEST_VARIABLE
 
 def main_func():
   MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-  if functionalizedAWSIOT.AWS_MQTT_subscribe(MQTTClient, "testing", subscriptionFunctions.testCallbackFunction):
+  if functionalizedAWSIOT.AWS_MQTT_subscribe(MQTTClient, "testing", testCallbackFunction):
     sleep(5)
     functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "testing", "testing message boop beep")
     sleep(5)
-    return subscriptionFunctions.GLOBAL_TEST_VARIABLE
+    return GLOBAL_TEST_VARIABLE
   return -1
 
 def test_Travis():
