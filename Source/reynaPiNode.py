@@ -2,6 +2,9 @@ import time
 import RPi.GPIO as GPIO
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from datetime import date, datetime
+import functionalizedAWSIOT
+import subscriptionFunctions
+from defines import *
 import json
 
 
@@ -86,47 +89,17 @@ def sensor(Trig,Echo):
 	return averageDistance
 
 
-def distCallBack(self, params,packet):
-	payloadInfo = json.loads(packet.payload)
-	distance = payloadInfo["distance"]
-	if distance <15:
-		stop1()
-	else:
-		go1()
-
-def humidCallBack(self, params, packet):
-        payloadInfo = json.loads(packet.payload)
-        humidity = payloadInfo["humidity"]
-        print("humidity:", str(humidity))
-        humidity = int(humidity)
-        if humidity < 65:
-                stop2()
-        else:
-                go2()
-
 if __name__ == "__main__" :
 
 	try:
 		GPIO.setwarnings(False)
 		setup()
 
-		#AwsReyna ultrasonic connection
-		myMQTTClient = AWSIoTMQTTClient("ReynaPI")
-		myMQTTClient.configureEndpoint("a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com",8883)
-		myMQTTClient.configureCredentials("/home/pi/Certificates/rootCA.pem","/home/pi/Certificates/d626c8c838-private.pem.key","/home/pi/Certificates/d626c8c838-certificate.pem.crt")
-		#myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
-		myMQTTClient.configureOfflinePublishQueueing(-1)
-		myMQTTClient.configureDrainingFrequency(2)
-		myMQTTClient.configureConnectDisconnectTimeout(10)
-		myMQTTClient.configureMQTTOperationTimeout(5)
-		myMQTTClient.configureAutoReconnectBackoffTime(1,32,20)
-
-		#connect
-		myMQTTClient.connect()
+		myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
 
 		while True:
 
-			#publish sensor data to ReynaPi/ultrasonic
+			#publish sensor data to MotorController/reynaPi/ultrasonic
 			#get the timestamp
 			now = datetime.utcnow()
 			now_str = now.strftime('%Y-%m-%dT%H:%M%SZ')
@@ -135,11 +108,11 @@ if __name__ == "__main__" :
 			payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
 
 			#publish data to AWS topic ReynaPi/ultrasonic
-			myMQTTClient.publish("ReynaPi/ultrasonic",payload,0)
+			functionalizedAWSIOT.AWS_MQTT_publish(myMQTTClient,TOPICS[0],payload)
 
-			#subscribe to ReynaPi/ultrasonic and ryan_pi/data using callback functions
-			myMQTTClient.subscribe("ReynaPi/ultrasonic",1,distCallBack)
-			myMQTTClient.subscribe("ryan_pi/data",1,humidCallBack)
+			#subscribe ryan_pi/data using callback functions from subscriptionFunctions
+			#already subscribed to MotorController/reynaPi/ultrasonic
+			myMQTTClient.subscribe("ryan_pi/data",1,subscriptionFunctions.motor2)
 
 
 	except KeyboardInterrupt:
