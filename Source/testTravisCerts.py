@@ -8,6 +8,7 @@ import pytest
 import functionalizedAWSIOT
 import helpers
 from time import sleep
+import subscriptionFunctions
 
 
 def main_func():
