@@ -53,7 +53,7 @@ def AWS_SHADOW_Initialize(): #TODO Test this
 
 
 def AWS_MQTT_Initialize():
-  subprocess.call('./copyCertificates.sh')
+  #subprocess.call('./copyCertificates.sh')
   # AWS IoT certificate based connection---------------------------------------
   myMQTTClient = AWSIoTMQTTClient(CLIENT)#this can be any arbitrary string
   myMQTTClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
