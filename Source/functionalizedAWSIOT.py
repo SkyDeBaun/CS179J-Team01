@@ -13,9 +13,9 @@ CLIENT = "333052c1bf"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 
-CA_CERTIFICATE = "../Certificates/root-CA.crt"
-PRIVATE_KEY = "../Certificates/device-private.pem.key"
-DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
+CA_CERTIFICATE = "Certificates/root-CA.crt"
+PRIVATE_KEY = "Certificates/device-private.pem.key"
+DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
 
 def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   print("Subscribing to topics")
