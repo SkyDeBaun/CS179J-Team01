@@ -12,14 +12,14 @@ from datetime import date, datetime
 import functionalizedAWSIOT
 import subscriptionFunctions
 
-def insertRow(table, columns, primaryColumnName, entryNumber, temperature, humidity):
+def insertRow(table, columns, primaryColumnName, entryNumber, attributeOne, attributeTwo):
     # test that we can insert a new row into table with a given primary key (entryNumber)
 
     response = table.put_item(
         Item={
             primaryColumnName: entryNumber,
-            columns[0]: temperature,
-            columns[1]: humidity
+            columns[0]: attributeOne,
+            columns[1]: attributeTwo
         }
     )
 
@@ -35,7 +35,7 @@ def printAllRows(table, primaryColumnName):
     for row in response["Items"]:
         print(row)
 
-def createTable(DB, tableName, primaryColumnName, columns):
+def createTable(DB, tableName, primaryColumnName):
 
     table = DB.create_table(
         TableName=tableName,
@@ -58,20 +58,43 @@ def createTable(DB, tableName, primaryColumnName, columns):
     )
     return table
 
-# Publication function for tripwire 
+def deleteTable(table):
+    table.delete()
+    return table
+
+# Publication function for tripwire
+entryNumber_trigger = 0
 def tripwireTriggered(ev=None):
+    global entryNumber_trigger
     test = "does not matter"
     payload = test
     print("Tripwire triggered.")
     myMQTTClient.publish("CameraModule/Camera1/picture", payload, 0)
 
+    # Track timestamp in DynamoDB
+    now = datetime.utcnow()
+    now_str_date = now.strftime('%Y-%m-%d')
+    now_str_time = now.strftime('%H:%M:%S')
+
+    DB = boto3.resource("dynamodb")
+    tableName_trigger = "TripwireTracking"
+    primaryColumnName_trigger = "entryNumber"
+    columns_trigger = ["date", "time"]
+    triggerTable = DB.Table(tableName_trigger)
+    insertRow(triggerTable, columns_trigger, primaryColumnName_trigger, entryNumber_trigger, now_str_date, now_str_time)
+
+    # Increment tripwire table's entry number
+    entryNumber_trigger = entryNumber_trigger + 1
 
 # Main function
 if __name__ == "__main__":
 
     # Initialize MQTT client
     myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-    myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.controlFan)
+    myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, subscriptionFunctions.controlFan)
+    #myMQTTClient.subscribe("ryan_pi/GUItoggleFanControl", 1, subscriptionFunctions.GUItoggleFanControl)
+    #myMQTTClient.subscribe("ryan_pi/GUIturnOffFan", 1, subscriptionFunctions.GUIturnOffFan)
+    #myMQTTClient.subscribe("ryan_pi/GUIturnOnFan", 1, subscriptionFunctions.GUIturnOnFan)
 
     # GPIO set up
     GPIO.setmode(GPIO.BCM)
@@ -86,56 +109,78 @@ if __name__ == "__main__":
     # Pins for tripwire
     GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.add_event_detect(21, GPIO.FALLING, callback=tripwireTriggered, bouncetime=5000)
-    # entryNumber is my primary key!
-    # setup fields
-    tableName = "tempHumidityData"
-    primaryColumnName = "entryNumber"
-    columns = ["temperature", "humidity"]
+
+    # entryNumber is primary key for both tables
+
+    # Temperature/Humidity data table setup fields
+    tableName_tempHum = "tempHumidityData"
+    primaryColumnName_tempHum = "entryNumber"
+    columns_tempHum = ["temperature", "humidity"]
+
+    # Trigger timestamp table setup fields
+    tableName_trigger = "TripwireTracking"
+    primaryColumnName_trigger = "entryNumber"
+    columns_trigger = ["date", "time"]
 
     # resource
     DB = boto3.resource("dynamodb")
-    oldTable = DB.Table(tableName)
+    oldTable_tempHum = DB.Table(tableName_tempHum)
+    oldTable_trigger = DB.Table(tableName_trigger)
 
     # Delete existing table
-    oldTable.delete()
+    oldTableTempHum = deleteTable(oldTable_tempHum)
+    oldTableTrigger = deleteTable(oldTable_trigger)
 
+    # 3 second sleep to give tables time to be deleted on AWS
     sleep(3)
-    print("OLD TABLE DELETED")
+    print("OLD TABLES DELETED")
 
-    # Create new table
-    newTable = createTable(DB, tableName, primaryColumnName, columns)
+    # Create new tables
+    newTableTempHum = createTable(DB, tableName_tempHum, primaryColumnName_tempHum)
+    newTableTrigger = createTable(DB, tableName_trigger, primaryColumnName_trigger)
 
+    #5 second sleep to give tables time to be created on AWS
     sleep(5)
-    print("NEW TABLE CREATED")
+    print("NEW TABLES CREATED")
 
     # test insert row with entryNumber of 1
-    entryNumber = 1
-    while True:
-        temperature = None
-        humidity = None
-        humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-        if humidity is not None and temperature is not None:
+    entryNumber_tempHum = 1
+    try:
+        while True:
+            temperature = None
+            humidity = None
+            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+            if humidity is not None and temperature is not None:
 
-            temperature = Decimal(temperature)
-            temperature = round(temperature, 2)
-            humidity = Decimal(humidity)
-            humidity = round(humidity, 2)
-            print(f"Temperature: {temperature}, Humidity: {humidity}")
-            print("####")
-            insertRow(newTable, columns, primaryColumnName, entryNumber, temperature, humidity)
-            now = datetime.utcnow()
-            now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-            payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
-            myMQTTClient.publish("ryan_pi/data", payload, 0)
+                temperature = Decimal(temperature)
+                temperature = round(temperature, 2)
+                humidity = Decimal(humidity)
+                humidity = round(humidity, 2)
+                print(f"Temperature: {temperature}, Humidity: {humidity}")
+                print("####")
+                insertRow(newTableTempHum, columns_tempHum, primaryColumnName_tempHum, entryNumber_tempHum, temperature, humidity)
+                now = datetime.utcnow()
+                now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+                payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
+                myMQTTClient.publish("RyanPi/ryan_pi/data", payload, 0)
+            else:
+                print("Failed to retrieve data from humidity sensor")
 
-        else:
-            print("Failed to retrieve data from humidity sensor")
+            # Increment temperature/humidity table's primary key value for next row entry
+            entryNumber_tempHum = entryNumber_tempHum + 1
+            # Sleep for 2 seconds, only grab values every 2 seconds
+            sleep(2)
 
-        entryNumber = entryNumber + 1
-        #if (entryNumber == 10):
-        #    break
+    except KeyboardInterrupt:
+       print("Keyboard interrupt, exiting program")
+       GPIO.cleanup()
 
-        sleep(2)
+    except:
+        print("Error, exiting program")
+        GPIO.cleanup()
+        exit()
 
-    # print all our rows
-    printAllRows(newTable, primaryColumnName)
+    finally:
+        print("Catch all executed")
+        GPIO.cleanup()
+        exit()
