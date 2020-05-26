@@ -39,7 +39,7 @@ def controlFan(self, params, packet):
 
 def ultrasonic(client, userdate, message):
   distance=0
-  payloadInfo = json.load(message.payload)
+  payloadInfo = json.loads(message.payload)
   distance = payloadInfo["distance"]
   if distance<15:
     reynaPiNode.stop1()

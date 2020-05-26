@@ -1,12 +1,13 @@
-DEVICE_TYPE = "CameraModule"
-THING_NAME = "Camera1"
-TOPICS = ["picture", "stream", "video"]
+#DEVICE_TYPE = "CameraModule"
+#THING_NAME = "Camera1"
+#TOPICS = ["picture", "stream", "video"]
 
-# DEVICE_TYPE = "MotorController"
-# THING_NAME = "ReynaPi"
-# TOPICS = ["picture", "stream", "video"]
-
-# DEVICE_TYPE = "FanController"
+DEVICE_TYPE = "MotorController"
+THING_NAME = "reynaPi"
+#subscribed topics for device type and thing name
+TOPICS = ["ultrasonic"]
+ 
+# DEVICE_TYPE "FanController"
 # THING_NAME = "RyanPi"
 # TOPICS = ["picture", "stream", "video"]
 
