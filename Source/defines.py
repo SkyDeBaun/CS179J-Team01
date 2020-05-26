@@ -16,5 +16,5 @@
 
 DEVICE_TYPE = "Testing"
 THING_NAME = "Travis"
-TOPICS = ["testing"]
+TOPICS = []
 
