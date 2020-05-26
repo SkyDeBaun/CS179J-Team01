@@ -5,7 +5,6 @@ import RPi.GPIO as GPIO
 import json
 from decimal import Decimal
 
-
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
 # Note that client and userdata are here just to be aligned with the underneath Paho callback function signature.
@@ -74,3 +73,12 @@ subscribedTopicDictionary = {
 #Maybe check if k is valid input
 def generateCallbackFunction(k):
   return subscribedTopicDictionary[k]
+
+
+#####################################################################
+# Custom callback functions for testing purposes only
+#####################################################################
+GLOBAL_TEST_VARIABLE = 0
+def testCallbackFunction(client, userdata, message):
+  global GLOBAL_TEST_VARIABLE
+  GLOBAL_TEST_VARIABLE += 1

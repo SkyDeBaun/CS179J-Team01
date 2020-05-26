@@ -17,7 +17,7 @@ CA_CERTIFICATE = "../Certificates/root-CA.crt"
 PRIVATE_KEY = "../Certificates/device-private.pem.key"
 DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
 
-def AWS_MQTT_subscribe(MQTTClient, topic):
+def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   print("Subscribing to topics")
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
@@ -28,7 +28,9 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
         print(t + " Subscription successful")
   else:
     #TODO
-    print("Topic not found, fix this")
+    print("Custom topic subscription for testing")
+    topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
+    MQTTClient.subscribe(topicPath, 1, function)
     exit(1)
 
 
