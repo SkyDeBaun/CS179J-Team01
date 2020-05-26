@@ -1,7 +1,7 @@
 
 #unified MQTT library----------------------------------------
-#import functionalizedAWSIOT
-#import subscriptionFunctions
+import functionalizedAWSIOT
+import subscriptionFunctions
 
 
 #GPIO--------------------------------------------------------
@@ -25,8 +25,8 @@ if __name__ == "__main__":
 
     try:
     
-        #myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-        #print("MQTT Client Initialized")
+        myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
+        print("MQTT Client Initialized")
 
 
         #radio tranceiver configuration---------------------------------------------------------
@@ -58,28 +58,29 @@ if __name__ == "__main__":
         print("Trying to initialize Radio...")
         #initialize radio transceiver------------------------------------------------------------
         #---------------------------------------------------------------------------------------
-        with Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) as radio:
+        radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False)
             #clear()
-            print ("INITIALIZING RADIO TRANSCEIVER NETWORK:\n\n")
-            time.sleep(0.5)
+        print ("INITIALIZING RADIO TRANSCEIVER NETWORK:\n\n")
+        time.sleep(0.5)
 
-            while True:
+        while True:
 
-                print ("hello: " + str(rx_counter))
+            print ("hello: " + str(rx_counter))
 
-                delay = 0.5 #1/2 second interval
-                rx_counter += delay
-                tx_counter += delay
-                up_counter += delay
-                node_counter += delay
-                time.sleep(delay)
+            delay = 0.5 #1/2 second interval
+            rx_counter += delay
+            tx_counter += delay
+            up_counter += delay
+            node_counter += delay
+            time.sleep(delay)
 
         
     except KeyboardInterrupt:
         print ("Keyboard exit triggered")
 
-    except:
-        print("Unspecified Exception Occured")
+    except Exception as e:
+        print(sys.exc_value)
+
 
     finally:
         print("Catch all executed")
