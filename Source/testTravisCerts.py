@@ -10,8 +10,6 @@ import functionalizedAWSIOT
 import helpers
 from time import sleep
 
-
-
 def main_func():
   MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
   if functionalizedAWSIOT.AWS_MQTT_subscribe(MQTTClient, "testing", subscriptionFunctions.testCallbackFunction):
