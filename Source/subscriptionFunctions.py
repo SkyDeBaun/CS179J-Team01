@@ -16,22 +16,15 @@ def picture(client, userdata, message):
     fileName = cameraCode.takePicture()
     helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   finally:
-    print("Taking picture and uploading to S3 bin")
     return True
 
 def controlFan(self, params, packet):
   payloadDict = json.loads(packet.payload)
   humidity = Decimal(payloadDict["humidity"])
-  print(packet.payload)
   if (humidity > 85):
-    print("Fan is ON")
-    print("####")
     GPIO.output(16, GPIO.LOW)
     return 1
-
   else:
-    print("Fan is OFF")
-    print("####")
     GPIO.output(16, GPIO.HIGH)
     return 0
 
@@ -51,7 +44,6 @@ def motor2(client, userdate, message):
   humidity=0
   payloadInfo = json.loads(message.payload)
   humidity = payloadInfo["humidity"]
-  print("humidity:", str(humidity))
   humidity = int(humidity)
   if humidity < 65:
    reynaPiNode.stop2()
