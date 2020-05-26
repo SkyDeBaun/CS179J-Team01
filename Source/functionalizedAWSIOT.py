@@ -31,7 +31,6 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
     print("Custom topic subscription for testing")
     topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
     MQTTClient.subscribe(topicPath, 1, function)
-    exit(1)
 
 
 def AWS_SHADOW_Initialize(): #TODO Test this
