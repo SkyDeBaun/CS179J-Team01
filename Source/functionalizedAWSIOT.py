@@ -26,11 +26,14 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
       print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
+        return True
   else:
     #TODO
     print("Custom topic subscription for testing")
     topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
-    MQTTClient.subscribe(topicPath, 1, function)
+    if MQTTClient.subscribe(topicPath, 1, function):
+      return True
+  return False
 
 
 def AWS_SHADOW_Initialize(): #TODO Test this
