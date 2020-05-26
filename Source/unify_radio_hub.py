@@ -79,7 +79,7 @@ if __name__ == "__main__":
         print ("Keyboard exit triggered")
 
     except Exception as e:
-        print(sys.exc_value)
+        print(e)
 
 
     finally:
