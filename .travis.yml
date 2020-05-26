@@ -1,13 +1,13 @@
 language: python
 python:
 #    - "3.6"      # current default Python on Travis CI
- #   - "3.7"
+    - "3.7"
     - "3.8"
 install:
   - pip install AWSIoTPythonSDK
   - pip install boto3
   - pip install fake_rpi
-
+  - pip install importlib-metadata
 before_script:
   - echo -e $AWS_CA_CERT > $TRAVIS_BUILD_DIR/Certificates/root-CA.crt
   - echo -e $AWS_PRIVATE_KEY > $TRAVIS_BUILD_DIR/Certificates/device-private.pem.key
