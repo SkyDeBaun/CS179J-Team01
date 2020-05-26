@@ -9,9 +9,9 @@ install:
   - pip install fake_rpi
 
 before_script:
-  - echo -e $AWS_CA_CERT > TRAVIS_BUILD_DIR/Certificates/root-CA.crt
-  - echo -e $AWS_PRIVATE_KEY > TRAVIS_BUILD_DIR/Certificates/device-private.pem.key
-  - echo -e $DEVICE_CERT > TRAVIS_BUILD_DIR/Certificates/device-certificate.pem.crt
+  - echo -e $AWS_CA_CERT > $TRAVIS_BUILD_DIR/Certificates/root-CA.crt
+  - echo -e $AWS_PRIVATE_KEY > $TRAVIS_BUILD_DIR/Certificates/device-private.pem.key
+  - echo -e $DEVICE_CERT > $TRAVIS_BUILD_DIR/Certificates/device-certificate.pem.crt
 script:
   - pytest Source/testTravisCerts
 #  - pytest Source/test.py
