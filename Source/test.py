@@ -1,6 +1,5 @@
 import sys
 import fake_rpi
-
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
 sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
 
@@ -9,6 +8,13 @@ import subscriptionFunctions
 import pytest #My local machine doesn't like this
 import inspect
 import json
+import time
+from temperatureHumidity import createTable
+from temperatureHumidity import deleteTable
+from temperatureHumidity import insertRow
+import boto3
+import string
+import random
 
 # content of test_sample.py
 # def func(x):
@@ -20,7 +26,7 @@ import json
 
 
 #################################################################################
-# Template parametrized test function 
+# Template parametrized test function
 # All capitalized letter words are where things need to be filled in
 # The name of test should have "test_" affixiated to the front
 # INPUT and EXPECTED are automatically filled in in the function call with the items from the list
@@ -61,7 +67,7 @@ message4 = message('{ "distance": ' + "7" + ',"humidity": '+ "30" + ' }')
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
-	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+        assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
@@ -82,3 +88,51 @@ message4 = message(data4)
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+
+
+# Test createTable() function for DynamoDB using createTable() function from temperatureHumidity.py
+def test_createDynamoTable():
+  tableName = "tableToCreateThenDelete"
+  primaryColumnName = "testPrimaryKey"
+  columns = ["testColumn1", "testColumn2"]
+  DB = boto3.resource("dynamodb")
+  testTable = createTable(DB, tableName, primaryColumnName)
+  assert testTable.table_status == "CREATING"
+  # Sleep for 5 seconds to allow time for table to be created
+  time.sleep(5)
+
+# Test deleteTable() function for DynamoDB using deleteTable() function from temperatureHumidity.py
+
+def test_deleteDynamoTable():
+  DB = boto3.resource("dynamodb")
+  testTable = DB.Table("tableToCreateThenDelete")
+  testTable = deleteTable(testTable)
+  assert testTable.table_status == "DELETING"
+
+# Test insertRow() function for DynamoDB using insertRow() function from temperatureHumidity.py
+
+def test_insertDynamoRow():
+  DB = boto3.resource("dynamodb")
+  insertionTable = DB.Table("testInsertTable")
+  columns = ["Robot Noise 1", "Robot Noise 2"]
+  primaryColumnName = "Random String Key"
+  attributeOne = "Boop"
+  attributeTwo = "Beep"
+
+  # Method to generate random string used from here: https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+  entryString = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
+
+  # Check the number of rows in table before insertion
+  response = insertionTable.scan()
+  tableSizeBefore = len(response["Items"])
+
+  # Insert new row
+  insertRow(insertionTable, columns, primaryColumnName, entryString, attributeOne, attributeTwo)
+  time.sleep(1)
+
+  # Check the number of rows in table after insertion
+  response = insertionTable.scan()
+  tableSizeAfter = len(response["Items"])
+
+  assert tableSizeAfter - tableSizeBefore == 1
+
