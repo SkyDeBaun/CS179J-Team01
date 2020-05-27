@@ -61,11 +61,18 @@ def motor2(client, userdate, message):
    reynaPiNode.go2()
    return 1
 
+
+def hello(client, userdata, message):
+  payloadInfo = json.loads(message.payload)
+  print(payloadInfo)
+
+
 subscribedTopicDictionary = {
   "picture" : picture,
   "controlFan" : controlFan,
   "ultrasonic" : ultrasonic,
-  "motor2" : motor2
+  "motor2" : motor2,
+  "hello" : hello
   #FIXME Find some way to not hardcode value names
 }
 
