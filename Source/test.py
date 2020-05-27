@@ -6,7 +6,6 @@ sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
 
 
 import subscriptionFunctions
-import shadowFunctions
 import pytest #My local machine doesn't like this
 import inspect
 import json

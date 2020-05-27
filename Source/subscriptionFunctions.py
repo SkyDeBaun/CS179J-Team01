@@ -5,7 +5,6 @@ import RPi.GPIO as GPIO
 import json
 from decimal import Decimal
 
-
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload. 
 # Note that client and userdata are here just to be aligned with the underneath Paho callback function signature.
@@ -17,22 +16,15 @@ def picture(client, userdata, message):
     fileName = cameraCode.takePicture()
     helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   finally:
-    print("Taking picture and uploading to S3 bin")
     return True
 
 def controlFan(self, params, packet):
   payloadDict = json.loads(packet.payload)
   humidity = Decimal(payloadDict["humidity"])
-  print(packet.payload)
   if (humidity > 85):
-    print("Fan is ON")
-    print("####")
     GPIO.output(16, GPIO.LOW)
     return 1
-
   else:
-    print("Fan is OFF")
-    print("####")
     GPIO.output(16, GPIO.HIGH)
     return 0
 
@@ -52,7 +44,6 @@ def motor2(client, userdate, message):
   humidity=0
   payloadInfo = json.loads(message.payload)
   humidity = payloadInfo["humidity"]
-  print("humidity:", str(humidity))
   humidity = int(humidity)
   if humidity < 65:
    reynaPiNode.stop2()
@@ -74,3 +65,12 @@ subscribedTopicDictionary = {
 #Maybe check if k is valid input
 def generateCallbackFunction(k):
   return subscribedTopicDictionary[k]
+
+
+#####################################################################
+# Custom callback functions for testing purposes only
+#####################################################################
+GLOBAL_TEST_VARIABLE = 0
+def testCallbackFunction(client, userdata, message):
+  global GLOBAL_TEST_VARIABLE
+  GLOBAL_TEST_VARIABLE += 1
