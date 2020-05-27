@@ -52,6 +52,10 @@ def GUIturnOffFan(client, userdata, message):
 def controlFan(client, userdata, message):
   global GUI_control_fan
 
+  # Only runs during testing, need to set GUI_control_fan to 0 explicity. Otherwise GUI_control_fan is never set
+  if (client == None and userdata == None):
+    GUI_control_fan = 0
+
   payloadDict = json.loads(message.payload)
   humidity = Decimal(payloadDict["humidity"])
 
@@ -65,6 +69,7 @@ def controlFan(client, userdata, message):
     # Turning fan off
     GPIO.output(16, GPIO.HIGH)
     return 0
+  return -1
 
 
 def data(self, params, packet):
