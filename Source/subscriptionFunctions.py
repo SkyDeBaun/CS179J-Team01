@@ -5,8 +5,9 @@ import RPi.GPIO as GPIO
 import json
 from decimal import Decimal
 
-#GUI control variable
+#GUI control variables
 GUI_control_fan = 0
+GUI_control_motor = 0
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
@@ -23,7 +24,6 @@ def picture(client, userdata, message):
     return True
 
 # Function to toggle GUI's fan control (triggered from button)
-
 def GUItoggleFanControl(client, userdata, message):
   global GUI_control_fan
 
@@ -36,8 +36,6 @@ def GUItoggleFanControl(client, userdata, message):
     GUI_control_fan = 0
     # Turn off fan on toggle of fan control, give control of fan back to sensor
     GPIO.output(16, GPIO.HIGH)
-
-  print(f"Toggled fan control, GUI_control_fan is now {GUI_control_fan}")
 
 
 def GUIturnOnFan(client, userdata, message):
@@ -55,11 +53,13 @@ def GUIturnOffFan(client, userdata, message):
 def controlFan(client, userdata, message):
   global GUI_control_fan
 
-  print(f"GUI_control_fan is {GUI_control_fan}")
+
+  if (client == "Testing" and userdata == "Testing"):
+    GUI_control_fan = 0
 
   payloadDict = json.loads(message.payload)
   humidity = Decimal(payloadDict["humidity"])
-  print(humidity)
+
   # Note GUI_control_fan in conditionals
   if (humidity > 85 and GUI_control_fan == 0):
     # Turning fan on
@@ -75,6 +75,34 @@ def controlFan(client, userdata, message):
 def data(self, params, packet):
   print("")
 
+# Function to toggle GUI's motor control (triggered from button)
+def GUItoggleMotorControl(client, userdata, message):
+  global GUI_control_motor
+
+  if (GUI_control_motor == 0):
+    GUI_control_motor = 1
+    # Turn off motor on toggle of motor control, give control of motor back to sensor
+    reynaPiNode.stop2()
+
+  elif (GUI_control_motor == 1):
+    GUI_control_motor = 0
+    # Turn off motor on toggle of motor control, give control of motor back to sensor
+    reynaPiNode.stop()
+
+
+def GUIturnOnMotor(client, userdata, message):
+  global GUI_control_motor
+  if (GUI_control_motor == 1):
+    # Turn motor on
+    reynaPiNode.go2()
+
+def GUIturnOffMotor(client, userdata, message):
+  global GUI_control_motor
+  if (GUI_control_motor == 1):
+    # Turn motor off
+    reynaPiNode.stop2()
+
+
 def ultrasonic(client, userdate, message):
   distance=0
   payloadInfo = json.loads(message.payload)
@@ -87,15 +115,19 @@ def ultrasonic(client, userdate, message):
     return 1
 
 def motor2(client, userdate, message):
+
+  if (client == "Testing" and userdate == "Testing"):
+    GUI_motor_control = 0
+
   humidity=0
   payloadInfo = json.loads(message.payload)
   humidity = payloadInfo["humidity"]
   print("humidity:", str(humidity))
   humidity = int(humidity)
-  if humidity < 65:
+  if humidity < 65 and GUI_control_motor == 0:
    reynaPiNode.stop2()
    return 0
-  else:
+  elif humidity >= 65 and GUI_control_motor == 0:
    reynaPiNode.go2()
    return 1
 
@@ -107,7 +139,10 @@ subscribedTopicDictionary = {
   "GUItoggleFanControl" : GUItoggleFanControl,
   "GUIturnOnFan" : GUIturnOnFan,
   "GUIturnOffFan" : GUIturnOffFan,
-  "data" : data
+  "data" : data,
+  "GUIturnOnMotor" : GUIturnOnMotor,
+  "GUIturnOffMotor" : GUIturnOffMotor,
+  "GUItoggleMotorControl" : GUItoggleMotorControl
   #FIXME Find some way to not hardcode value names
 }
 

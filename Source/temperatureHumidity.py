@@ -70,7 +70,7 @@ def tripwireTriggered(ev=None):
     payload = test
     print("Tripwire triggered.")
     myMQTTClient.publish("CameraModule/Camera1/picture", payload, 0)
-
+    myMQTTClient.publish("RyanPi/ryan_pi/tripwire", payload, 0)
     # Track timestamp in DynamoDB
     now = datetime.utcnow()
     now_str_date = now.strftime('%Y-%m-%d')
