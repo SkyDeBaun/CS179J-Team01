@@ -12,5 +12,5 @@
 
 DEVICE_TYPE = "RadioNetwork"
 THING_NAME = "Pi_sense01"
-TOPICS = ["hello", "subHumiture"]
+TOPICS = ["subHumiture", "subRadioNodes", "subUltrasonic"]
 
