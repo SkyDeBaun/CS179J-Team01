@@ -18,70 +18,81 @@ import random
 import string
 
 
+# radio tranceiver configuration-------------------------------
+# -------------------------------------------------------------
+node_id = 1  # hub node (this)
+network_id = 100  # 1 - 255
+key = "sampleEncryptKey"  # must be shared accross all radios on the radio net
+
+rx_counter = 0.0  # timer counter for checking for incoming data packet
+tx_counter = 0.0  # timer counter
+up_counter = 0.0  # update counter
+node_counter = 0.0  # when to refresh node counter
+
+sender = 0  # ID of transmitter
+receiver = 0  # ID of receiver
+data = []  # temp list for grabbing sensor values
+sensorNodes = {}  # store discovered active nodes on the radio net into a list
+numberNodes = 0  # save number of nodes on radio transceiver network
+
+temp = -999.00  # default start values
+lightLevel = -999
+Humidity = -999
+
+# default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
+JSONPayload = '{"Light":' + str(
+    lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(-999) + '"}'
+
+
+#functions-------------------------------------------------------
+#----------------------------------------------------------------
+
+# clear screen function------------------------------------------
+def clear(): 
+  
+    # for windows 
+    if name == 'nt': 
+        _ = system('cls') 
+  
+    # for mac and linux(here, os.name is 'posix') 
+    else: 
+        _ = system('clear') 
+
+
 # main function-----------------------------------------------
 # ------------------------------------------------------------
 if __name__ == "__main__":
 
     try:
-
+        # initialize AWS MQTT----------------------------------
         myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
         print("MQTT Client Initialized")
 
-        # radio tranceiver configuration---------------------------------------------------------
-        # ---------------------------------------------------------------------------------------
-        node_id = 1  # hub node (this)
-        network_id = 100  # 1 - 255
-        key = "sampleEncryptKey"  # must be shared accross all radios on the radio net
-
-        rx_counter = 0.0  # timer counter for checking for incoming data packet
-        tx_counter = 0.0  # timer counter
-        up_counter = 0.0  # update counter
-        node_counter = 0.0  # when to refresh node counter
-
-        sender = 0  # ID of transmitter
-        receiver = 0  # ID of receiver
-        data = []  # temp list for grabbing sensor values
-        sensorNodes = {}  # store discovered active nodes on the radio net into a list
-        numberNodes = 0  # save number of nodes on radio transceiver network
-
-        temp = -999.00  # default start values
-        lightLevel = -999
-        Humidity = -999
-
-        # default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
-        JSONPayload = '{"Light":' + str(
-            lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(-999) + '"}'
-
-
-
-        print("INITIALIZING RADIO TRANSCEIVER NETWORK:\n\n")
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
-        radio = Radio(FREQ_915MHZ, node_id, network_id,
-                      encryptionKey=key, isHighPower=True, verbose=False)
-        # clear()
-        print("RADIO INITIALIZED:\n\n")
-        #time.sleep(0.5)
+        radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False)
+        clear()
+        print("RADIO NETWORK INITIALIZED:\n\n")
 
         while True:
-
             # Every 1 seconds check for packets----------------------------------
             if rx_counter >= 1:
-                rx_counter = 0.0 #reset counter
-                
+                rx_counter = 0.0  # reset counter
+
                 if radio.has_received_packet():
                     # print("\n\nData Packet Received")
-                    
+
                     # Process packets
                     for packet in radio.get_packets():
                         sender = packet.sender
                         receiver = packet.receiver
                         data = packet.data
-                        
-                        datastring = ""
+
+                        datastring = "" #reset data string
                         for x in data:
-                            datastring += chr(x) #convert to char and add to string
-                        
+                            # convert to char and add to string
+                            datastring += chr(x)
+
                         # output received data--------------------------------------
                         '''
                         print("---------------------------------")
@@ -93,51 +104,56 @@ if __name__ == "__main__":
 
                         # parse radio data string for value pair--------------------
                         parse = datastring.split(" ")
-                        sensorType = str(parse[0].replace(":","")) #clean junk from parsed string
+                        # clean junk from parsed string
+                        sensorType = str(parse[0].replace(":", ""))
 
-                        #my radio node specific sensorTypes-------------------------
+                        # my radio node specific sensorTypes-------------------------
                         if sensorType == "Temperature":
                             temp = float(parse[1])
-                            temp = (temp/100.0) #convert to float (puts in decimal form)
+                            # convert to float (puts in decimal form)
+                            temp = (temp/100.0)
 
                         elif sensorType == "Light":
                             lightLevel = parse[1].replace("%", "")
                             lightLevel = int(lightLevel)
-                        
-                        sensorNodes[str(sender)] = sensorType #add new node -> overwrites previous values if key pair exists already
 
-                        
-                        # collate recieved sensor data------------------------------- 
-                        now = datetime.utcnow()#iso timestamp
-                        now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-                        JSONPayload = '{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}'
+                        # add new node -> overwrites previous values if key pair exists already
+                        sensorNodes[str(sender)] = sensorType
+
+                        # collate recieved sensor data-------------------------------
+                        now = datetime.utcnow()  # iso timestamp
+                        # e.g. 2016-04-18T06:12:25.877Z
+                        now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        JSONPayload = '{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(
+                            temp) + ', "Time": "' + now_str + '"}'
 
                 # else no packets recieved
-                
-                        
+
             # 3 second counter-------------------------------------------------------
-            if up_counter > 2.0: #every 2 seconds
+            if up_counter > 2.0:  # every 2 seconds
                 up_counter = 0
 
                 # list active nodes on network----------------------------------------
                 print("--------------------------------------------------------------")
-                print("TRANSCEIVER NODES ON THE NETWORK: " + str(len(sensorNodes)))
+                print("TRANSCEIVER NODES ON THE NETWORK: " +
+                      str(len(sensorNodes)))
                 for key in sensorNodes:
-                    print("Node " + key + ": " + str(sensorNodes[key]))                        
+                    print("Node " + key + ": " + str(sensorNodes[key]))
 
                 # publish to my Thing-------------------------------------------------
-                if len(sensorNodes) > 0: #only send if 1 or more nodes
-                    #deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
+                if len(sensorNodes) > 0:  # only send if 1 or more nodes
                     myMQTTClient.publish("Pi_sense01/data", JSONPayload, 0)
 
                 # get subcriptions----------------------------------------------------
-                myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.subHumiture)
+                myMQTTClient.subscribe(
+                    "ryan_pi/data", 1, subscriptionFunctions.subHumiture)
 
-                #this should be in callback function----------------------------------DEMO romote actuation via radio
+                # this should be in callback function----------------------------------DEMO romote actuation via radio
                 if float(Humidity) > 80:
                     if radio.send(21, "1", attempts=2, waitTime=100):
                         # print ("LED Control Message -> On")
-                        print("") #stupid -> python complains if above print line commented (inside if statement)
+                        # stupid -> python complains if above print line commented (inside if statement)
+                        print("")
                     else:
                         # print ("LED Control Message -> No Acknowledgement")
                         print("")
@@ -146,34 +162,30 @@ if __name__ == "__main__":
                         # print ("LED Control Message -> Off")
                         print("")
 
-                
 
-
-            # reset dict on nodes----------------------------------------------------
-            if node_counter > 10.0: # every 21 seconds
+            # reset dictionary of nodes--------------------------------------------------
+            if node_counter > 10.0:  # every 10 seconds
                 node_counter = 0.0
 
                 # reset dict and shadow
-                sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary  
-                temp = -999.00 #default start values
+                sensorNodes.clear()  # clear dict of active nodes -> refresh the dictionary
+                temp = -999.00  # default start values
                 lightLevel = -999
-   
 
             # print("Listening...", len(radio.packets), radio.mode_name)
-            delay = 0.5 #1/2 second interval
+            delay = 0.5  # 1/2 second interval
             rx_counter += delay
             tx_counter += delay
             up_counter += delay
             node_counter += delay
             time.sleep(delay)
 
-        
     except KeyboardInterrupt:
-        print ("Keyboard Exit\n")
+        print("Keyboard Exit\n")
 
     except Exception as e:
         print("An Error Occured: ")
-        print(e) #print exception messages
+        print(e)  # print exception messages
 
     finally:
         print("Terminating Program: Radio Network Offline")
