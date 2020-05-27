@@ -71,7 +71,7 @@ if __name__ == "__main__":
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
         radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False)
-        clear()
+        #clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
 
         while True:
@@ -145,14 +145,14 @@ if __name__ == "__main__":
                     myMQTTClient.publish("Pi_sense01/data", JSONPayload, 0)
 
                 # get subcriptions----------------------------------------------------
-                myMQTTClient.subscribe(
-                    "ryan_pi/data", 1, subscriptionFunctions.subHumiture)
-
-                # this should be in callback function----------------------------------DEMO romote actuation via radio
+                myMQTTClient.subscribe("Pi_sense01/data", 1, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
+                myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.subHumiture)
+                myMQTTClient.subscribe("ReynaPi/ultrasonic", 1, subscriptionFunctions.subUltrasonic)
+                
+                # this should be in callback function----------------------------------DEMO romote actuation -> NOW DIFFICULT TO ACCESS!
                 if float(Humidity) > 80:
                     if radio.send(21, "1", attempts=2, waitTime=100):
                         # print ("LED Control Message -> On")
-                        # stupid -> python complains if above print line commented (inside if statement)
                         print("")
                     else:
                         # print ("LED Control Message -> No Acknowledgement")
@@ -181,10 +181,10 @@ if __name__ == "__main__":
             time.sleep(delay)
 
     except KeyboardInterrupt:
-        print("Keyboard Exit\n")
+        print("Keyboard Exit")
 
     except Exception as e:
-        print("An Error Occured: ")
+        print("An Error Occured:")
         print(e)  # print exception messages
 
     finally:
