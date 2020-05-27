@@ -3,7 +3,6 @@
 import functionalizedAWSIOT
 import subscriptionFunctions
 
-
 # GPIO--------------------------------------------------------
 import RPi.GPIO as GPIO
 
@@ -17,41 +16,6 @@ import time
 import json
 import random
 import string
-
-
-
-#callbacks-----------------------------------------------------
-# Callback function triggered when the topic subscribed to gets new published data
-def myCallBack(self, params, packet):
-        #print(packet.payload)
-        
-        payloadDict = json.loads(packet.payload)
-        global Temp
-        global Humidity
-        
-        Temp = payloadDict ["temperature"] #get value from JSON field        
-        Humidity = payloadDict["humidity"] #get value
-
-        print("Ryan's Sensor Data---------------------- ")
-        print("Temperature: " + str(Temp))
-        print("Humidity: " + str(Humidity))
-        print(" ")
-
-        if float(Humidity) > 85.0:
-            print ("HIGH HUMIDITY THRESHOLD*****************\n")        
-
-        print("")
-
-
-
-
-
-
-
-
-
-
-
 
 
 # main function-----------------------------------------------
@@ -85,8 +49,10 @@ if __name__ == "__main__":
         Humidity = -999
 
         # default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
-        JSONPayload = '{"state":{"desired":{"Light":' + str(
-            lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(-999) + '"}}}'
+        JSONPayload = '{"Light":' + str(
+            lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(-999) + '"}'
+
+
 
         print("INITIALIZING RADIO TRANSCEIVER NETWORK:\n\n")
         # initialize radio transceiver------------------------------------------------------------
@@ -95,10 +61,10 @@ if __name__ == "__main__":
                       encryptionKey=key, isHighPower=True, verbose=False)
         # clear()
         print("RADIO INITIALIZED:\n\n")
-        time.sleep(0.5)
+        #time.sleep(0.5)
 
         while True:
-            
+
             # Every 1 seconds check for packets----------------------------------
             if rx_counter >= 1:
                 rx_counter = 0.0 #reset counter
@@ -127,12 +93,9 @@ if __name__ == "__main__":
 
                         # parse radio data string for value pair--------------------
                         parse = datastring.split(" ")
-                        # print("Parse-------------------------------results:")
-                        # print("Parse 0: " + str(parse[0]))
-                        # print("Parse 1: " + str(parse[1]))
-
                         sensorType = str(parse[0].replace(":","")) #clean junk from parsed string
 
+                        #my radio node specific sensorTypes-------------------------
                         if sensorType == "Temperature":
                             temp = float(parse[1])
                             temp = (temp/100.0) #convert to float (puts in decimal form)
@@ -147,32 +110,30 @@ if __name__ == "__main__":
                         # collate recieved sensor data------------------------------- 
                         now = datetime.utcnow()#iso timestamp
                         now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ') #e.g. 2016-04-18T06:12:25.877Z
-                        JSONPayload = '{"state":{"desired":{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}}}'
+                        JSONPayload = '{"Light":' + str(lightLevel) + ', "Temperature":  ' + str(temp) +', "Time": "' + now_str + '"}'
 
-                # else no packets
-
+                # else no packets recieved
                 
                         
             # 3 second counter-------------------------------------------------------
             if up_counter > 2.0: #every 2 seconds
                 up_counter = 0
 
-                # list nodes in dictionary
+                # list active nodes on network----------------------------------------
                 print("--------------------------------------------------------------")
                 print("TRANSCEIVER NODES ON THE NETWORK: " + str(len(sensorNodes)))
                 for key in sensorNodes:
                     print("Node " + key + ": " + str(sensorNodes[key]))                        
 
-                # update shadow -----------------------------------------------------
+                # publish to my Thing-------------------------------------------------
                 if len(sensorNodes) > 0: #only send if 1 or more nodes
                     #deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5) #5 is token setting (?)
-                    print("hello shadow")
+                    myMQTTClient.publish("Pi_sense01/data", JSONPayload, 0)
 
-                # get subcription----------------------------------------------------
-                myMQTTClient.subscribe("Pi_sense01/data", 1, subscriptionFunctions.hello)
+                # get subcriptions----------------------------------------------------
                 myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.subHumiture)
-                # print("Humidity: " + str(float(Humidity)))
 
+                #this should be in callback function----------------------------------DEMO romote actuation via radio
                 if float(Humidity) > 80:
                     if radio.send(21, "1", attempts=2, waitTime=100):
                         # print ("LED Control Message -> On")
@@ -194,21 +155,9 @@ if __name__ == "__main__":
 
                 # reset dict and shadow
                 sensorNodes.clear() #clear dict of active nodes -> refresh the dictionary  
-                #deviceShadowHandler.shadowDelete(customShadowCallback_Delete, 5)#delete shadow...
                 temp = -999.00 #default start values
                 lightLevel = -999
-    
-
-                # test send message------------------------------------------------------ Future use: probing for devices on the network
-                # -----------------------------------------------------------------------> or remote control
-                '''
-                print ("Sending to node: " + str(recipient_id))
-                if radio.send(recipient_id, "TEST: " + str(counter), attempts=3, waitTime=100):
-                    print ("Acknowledgement received")
-                else:
-                    print ("No Acknowledgement")
-                '''
-            
+   
 
             # print("Listening...", len(radio.packets), radio.mode_name)
             delay = 0.5 #1/2 second interval
@@ -216,18 +165,15 @@ if __name__ == "__main__":
             tx_counter += delay
             up_counter += delay
             node_counter += delay
-
             time.sleep(delay)
 
         
     except KeyboardInterrupt:
-        print ("Keyboard exit triggered")
+        print ("Keyboard Exit\n")
 
     except Exception as e:
-        print(e) #print any other exception messages
-
+        print("An Error Occured: ")
+        print(e) #print exception messages
 
     finally:
         print("Terminating Program: Radio Network Offline")
-
-
