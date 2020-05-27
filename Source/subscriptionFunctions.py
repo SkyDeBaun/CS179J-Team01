@@ -103,7 +103,7 @@ def GUIturnOffMotor(client, userdata, message):
     reynaPiNode.stop2()
 
 
-def ultrasonic(client, userdate, message):
+def ultrasonic(client, userdata, message):
   distance=0
   payloadInfo = json.loads(message.payload)
   distance = payloadInfo["distance"]
@@ -114,10 +114,10 @@ def ultrasonic(client, userdate, message):
     reynaPiNode.go1()
     return 1
 
-def motor2(client, userdate, message):
+def motor2(client, userdata, message):
 
-  if (client == "Testing" and userdate == "Testing"):
-    GUI_motor_control = 0
+  if (client == "Testing" and userdata == "Testing"):
+    GUI_control_motor = 0
 
   humidity=0
   payloadInfo = json.loads(message.payload)

@@ -52,7 +52,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
+  assert function("Testing", "Testing", message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
 
 # test values for motor test messages as jsons
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
@@ -66,7 +66,7 @@ def test_motorOperationBehaviour(message, expectedStatus):
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
- assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+ assert subscriptionFunctions.motor2("Testing", "Testing", message) == expectedStatus
 
 #Tests for DC fan below
 
@@ -82,5 +82,5 @@ message4 = message(data4)
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
-  assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+  assert subscriptionFunctions.controlFan("Testing", "Testing", message) == expectedStatus
 

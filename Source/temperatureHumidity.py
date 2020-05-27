@@ -164,6 +164,7 @@ if __name__ == "__main__":
                 payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
                 myMQTTClient.publish("RyanPi/ryan_pi/data", payload, 0)
                 myMQTTClient.publish("RyanPi/ryan_pi/controlFan", payload, 0)
+                myMQTTClient.publish("MotorController/reynaPi/motor2", payload, 0)
             else:
                 print("Failed to retrieve data from humidity sensor")
 
