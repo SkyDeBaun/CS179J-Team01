@@ -9,9 +9,9 @@ import pytest #My local machine doesn't like this
 import inspect
 import json
 import time
-from temperatureHumidity import createTable
-from temperatureHumidity import deleteTable
-from temperatureHumidity import insertRow
+from dynamoDBFunctions import createTable
+from dynamoDBFunctions import deleteTable
+from dynamoDBFunctions import insertRow
 import boto3
 import string
 import random
@@ -99,7 +99,7 @@ def test_createDynamoTable():
   testTable = createTable(DB, tableName, primaryColumnName)
   assert testTable.table_status == "CREATING"
   # Sleep for 5 seconds to allow time for table to be created
-  time.sleep(5)
+  time.sleep(7)
 
 # Test deleteTable() function for DynamoDB using deleteTable() function from temperatureHumidity.py
 
