@@ -66,13 +66,25 @@ def hello(client, userdata, message):
   payloadInfo = json.loads(message.payload)
   print(payloadInfo)
 
+#subscribe to Ryan's humidity/temperature sensor-----
+def subHumiture(client, userdate, message):
+  humidity=0
+  payloadInfo = json.loads(message.payload)
+  humidity = payloadInfo["humidity"]
+  temperature = payloadInfo["temperature"]
+  print("Receiving Ryan's Humiture Data:")
+  print("Temperature: ", str(temperature), "\tHumidity:", str(humidity))
+  if float(humidity) > 85.0:
+    print ("HIGH HUMIDITY THRESHOLD REACHED!\n")    
 
 subscribedTopicDictionary = {
   "picture" : picture,
   "controlFan" : controlFan,
   "ultrasonic" : ultrasonic,
   "motor2" : motor2,
-  "hello" : hello
+  "hello" : hello,
+  "subHumiture" : subHumiture
+
   #FIXME Find some way to not hardcode value names
 }
 

@@ -11,6 +11,6 @@
 # TOPICS = ["picture", "stream", "video"]
 
 DEVICE_TYPE = "RadioNetwork"
-THING_NAME = "SkyOnAPi"
-TOPICS = ["hello"]
+THING_NAME = "Pi_sense01"
+TOPICS = ["hello", "subHumiture"]
 
