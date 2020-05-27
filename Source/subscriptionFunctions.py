@@ -27,8 +27,6 @@ def picture(client, userdata, message):
 def GUItoggleFanControl(client, userdata, message):
   global GUI_control_fan
 
-  print(f"Toggled fan control, GUI_control_fan is now {GUI_control_fan}")
-
   if (GUI_control_fan == 0):
     GUI_control_fan = 1
     # Turn off fan on toggle of fan control, give control of fan back to sensor
@@ -38,6 +36,8 @@ def GUItoggleFanControl(client, userdata, message):
     GUI_control_fan = 0
     # Turn off fan on toggle of fan control, give control of fan back to sensor
     GPIO.output(16, GPIO.HIGH)
+
+  print(f"Toggled fan control, GUI_control_fan is now {GUI_control_fan}")
 
 
 def GUIturnOnFan(client, userdata, message):
