@@ -1,11 +1,12 @@
 import cameraCode
 import reynaPiNode
-import unify_radio_hub
 import helpers
 import RPi.GPIO as GPIO
+import functionalizedRadio
 import json
 from decimal import Decimal
 
+humidity = -99
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
@@ -68,10 +69,9 @@ def motor2(client, userdate, message):
 
 # subscribe to Ryan's humidity/temperature sensor-----
 def subHumiture(client, userdate, message):
-    payloadInfo = json.loads(message.payload)
+    payloadInfo = json.loads(message.payload)   
     humidity = payloadInfo["humidity"]
     temperature = payloadInfo["temperature"]
-    global radio
 
     print("\nRyan's Humiture Data:")
     print("Temperature: ", str(temperature), "\tHumidity:", str(humidity))
@@ -80,14 +80,10 @@ def subHumiture(client, userdate, message):
 
     if float(humidity) > 80:
         if radio.send(21, "1", attempts=2, waitTime=100):
-            # print ("LED Control Message -> On")
-            print("")
-        else:
-            # print ("LED Control Message -> No Acknowledgement")
-            print("")
+            print ("LED Control Message -> On")        
     else:
         if radio.send(21, "0", attempts=2, waitTime=100):
-            # print ("LED Control Message -> Off")
+            #print ("LED Control Message -> Off")
             print("")
 
 
@@ -98,6 +94,7 @@ def subRadioNodes(client, userdate, message):
     myLight = int(payloadInfo["Light"])
     print("\nRadio Network Data: ")
 
+    #print values from active nodes only
     if (myTemp != -999):  # print only if not default value
         print("Temperature: " + str(myTemp) + " C")
 
@@ -107,14 +104,17 @@ def subRadioNodes(client, userdate, message):
     print("\n")
 
 # subscribe to Reyna's ultrasonic sensor data-------------
-
-
 def subUltrasonic(client, userdate, message):
     payloadInfo = json.loads(message.payload)
     distance = payloadInfo["distance"]
     print("Reyna's Sensor Data: ")
     print("Distance: ", int(distance))
     print("\n")
+
+#radio specific only--------------------------------------
+def interfaceRadio(rad):
+    global radio #refers to variable in functionalizedRadio
+    radio = rad
 
 
 subscribedTopicDictionary = {
