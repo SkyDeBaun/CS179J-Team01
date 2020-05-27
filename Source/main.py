@@ -1,3 +1,4 @@
+import init
 import functionalizedAWSIOT
 import helpers
 from time import sleep
