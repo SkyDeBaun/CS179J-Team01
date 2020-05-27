@@ -26,6 +26,9 @@ def picture(client, userdata, message):
 
 def GUItoggleFanControl(client, userdata, message):
   global GUI_control_fan
+
+  print(f"Toggled fan control, GUI_control_fan is now {GUI_control_fan}")
+
   if (GUI_control_fan == 0):
     GUI_control_fan = 1
     # Turn off fan on toggle of fan control, give control of fan back to sensor
@@ -52,13 +55,11 @@ def GUIturnOffFan(client, userdata, message):
 def controlFan(client, userdata, message):
   global GUI_control_fan
 
-  # Only runs during testing, need to set GUI_control_fan to 0 explicity. Otherwise GUI_control_fan is never set
-  if (client == None and userdata == None):
-    GUI_control_fan = 0
+  print(f"GUI_control_fan is {GUI_control_fan}")
 
   payloadDict = json.loads(message.payload)
   humidity = Decimal(payloadDict["humidity"])
-
+  print(humidity)
   # Note GUI_control_fan in conditionals
   if (humidity > 85 and GUI_control_fan == 0):
     # Turning fan on
@@ -69,7 +70,6 @@ def controlFan(client, userdata, message):
     # Turning fan off
     GPIO.output(16, GPIO.HIGH)
     return 0
-  return -1
 
 
 def data(self, params, packet):
