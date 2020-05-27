@@ -1,13 +1,8 @@
 
 # unified MQTT library----------------------------------------
 import functionalizedAWSIOT
+import functionalizedRadio
 import subscriptionFunctions
-
-# GPIO--------------------------------------------------------
-import RPi.GPIO as GPIO
-
-# rfm radio---------------------------------------------------
-from RFM69 import Radio, FREQ_915MHZ
 
 # utility-----------------------------------------------------
 from datetime import date, datetime
@@ -17,13 +12,7 @@ import json
 import random
 import string
 
-
-# radio tranceiver configuration-------------------------------
-# -------------------------------------------------------------
-node_id = 1  # hub node (this)
-network_id = 100  # 1 - 255
-key = "sampleEncryptKey"  # must be shared accross all radios on the radio net
-
+#my radio network specific variables--------------------------
 rx_counter = 0.0  # timer counter for checking for incoming data packet
 tx_counter = 0.0  # timer counter
 up_counter = 0.0  # update counter
@@ -70,8 +59,9 @@ if __name__ == "__main__":
 
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
-        radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False)
-        #clear()
+        radio = functionalizedRadio.initializeRadio()
+        subscriptionFunctions.interfaceRadio(radio) #hack to provide radio object to subscription functions
+        clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
 
         while True:
@@ -148,20 +138,7 @@ if __name__ == "__main__":
                 myMQTTClient.subscribe("Pi_sense01/data", 1, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
                 myMQTTClient.subscribe("ryan_pi/data", 1, subscriptionFunctions.subHumiture)
                 myMQTTClient.subscribe("ReynaPi/ultrasonic", 1, subscriptionFunctions.subUltrasonic)
-                
-                # this should be in callback function----------------------------------DEMO romote actuation -> NOW DIFFICULT TO ACCESS!
-                if float(Humidity) > 80:
-                    if radio.send(21, "1", attempts=2, waitTime=100):
-                        # print ("LED Control Message -> On")
-                        print("")
-                    else:
-                        # print ("LED Control Message -> No Acknowledgement")
-                        print("")
-                else:
-                    if radio.send(21, "0", attempts=2, waitTime=100):
-                        # print ("LED Control Message -> Off")
-                        print("")
-
+                                
 
             # reset dictionary of nodes--------------------------------------------------
             if node_counter > 10.0:  # every 10 seconds
@@ -169,16 +146,16 @@ if __name__ == "__main__":
 
                 # reset dict and shadow
                 sensorNodes.clear()  # clear dict of active nodes -> refresh the dictionary
-                temp = -999.00  # default start values
+                temp = -999.00  #reset to default start values
                 lightLevel = -999
 
-            # print("Listening...", len(radio.packets), radio.mode_name)
             delay = 0.5  # 1/2 second interval
             rx_counter += delay
             tx_counter += delay
             up_counter += delay
             node_counter += delay
             time.sleep(delay)
+
 
     except KeyboardInterrupt:
         print("Keyboard Exit")
