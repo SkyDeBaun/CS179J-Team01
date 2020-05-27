@@ -29,7 +29,7 @@ def GUItoggleFanControl(client, userdata, message):
 
   if (GUI_control_fan == 0):
     GUI_control_fan = 1
-    # Turn off fan on toggle of fan control, give control of fan back to sensor
+    # Turn off fan on toggle of fan control, give control of fan to GUI
     GPIO.output(16, GPIO.HIGH)
 
   elif (GUI_control_fan == 1):
@@ -81,7 +81,7 @@ def GUItoggleMotorControl(client, userdata, message):
 
   if (GUI_control_motor == 0):
     GUI_control_motor = 1
-    # Turn off motor on toggle of motor control, give control of motor back to sensor
+    # Turn off motor on toggle of motor control, give control of motor to GUI
     reynaPiNode.stop2()
 
   elif (GUI_control_motor == 1):
