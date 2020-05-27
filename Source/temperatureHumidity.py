@@ -77,7 +77,7 @@ def tripwireTriggered(ev=None):
     now_str_time = now.strftime('%H:%M:%S')
 
     DB = boto3.resource("dynamodb")
-    tableName_trigger = "TripwireTracking"
+    tableName_trigger = "tripwireTracking"
     primaryColumnName_trigger = "entryNumber"
     columns_trigger = ["date", "time"]
     triggerTable = DB.Table(tableName_trigger)
