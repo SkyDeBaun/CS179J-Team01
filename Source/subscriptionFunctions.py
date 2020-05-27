@@ -1,5 +1,6 @@
 import cameraCode
 import reynaPiNode
+import unify_radio_hub
 import helpers
 import RPi.GPIO as GPIO
 import json
@@ -70,34 +71,49 @@ def subHumiture(client, userdate, message):
     payloadInfo = json.loads(message.payload)
     humidity = payloadInfo["humidity"]
     temperature = payloadInfo["temperature"]
+    global radio
 
     print("\nRyan's Humiture Data:")
     print("Temperature: ", str(temperature), "\tHumidity:", str(humidity))
     if float(humidity) > 85.0:  # print warning if threshold reached
         print("HIGH HUMIDITY THRESHOLD REACHED!\n")
 
+    if float(humidity) > 80:
+        if radio.send(21, "1", attempts=2, waitTime=100):
+            # print ("LED Control Message -> On")
+            print("")
+        else:
+            # print ("LED Control Message -> No Acknowledgement")
+            print("")
+    else:
+        if radio.send(21, "0", attempts=2, waitTime=100):
+            # print ("LED Control Message -> Off")
+            print("")
+
 
 # subscribe to Sky's radio network data------------------
 def subRadioNodes(client, userdate, message):
-      payloadInfo = json.loads(message.payload)
-      myTemp = float(payloadInfo["Temperature"])
-      myLight = int(payloadInfo["Light"])
-      print("\nRadio Network Data: ")
+    payloadInfo = json.loads(message.payload)
+    myTemp = float(payloadInfo["Temperature"])
+    myLight = int(payloadInfo["Light"])
+    print("\nRadio Network Data: ")
 
-      if (myTemp != -999):  # print only if not default value
+    if (myTemp != -999):  # print only if not default value
         print("Temperature: " + str(myTemp) + " C")
 
-      if (myLight != -999):
+    if (myLight != -999):
         print("Light level: " + str(myLight) + "%")
-        
-      print("\n")
 
-#subscribe to Reyna's ultrasonic sensor data-------------
+    print("\n")
+
+# subscribe to Reyna's ultrasonic sensor data-------------
+
+
 def subUltrasonic(client, userdate, message):
     payloadInfo = json.loads(message.payload)
     distance = payloadInfo["distance"]
     print("Reyna's Sensor Data: ")
-    print("Distance: " , int(distance))
+    print("Distance: ", int(distance))
     print("\n")
 
 
@@ -108,7 +124,7 @@ subscribedTopicDictionary = {
     "motor2": motor2,
     "subHumiture": subHumiture,
     "subRadioNodes": subRadioNodes,
-    "subUltrasonic" : subUltrasonic
+    "subUltrasonic": subUltrasonic
 
     # FIXME Find some way to not hardcode value names
 }
