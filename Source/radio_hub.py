@@ -26,7 +26,6 @@ numberNodes = 0  # save number of nodes on radio transceiver network
 
 temp = -999.00  # default start values
 lightLevel = -999
-Humidity = -999
 
 # default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"Light":' + str(
