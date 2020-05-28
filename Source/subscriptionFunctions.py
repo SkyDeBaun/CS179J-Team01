@@ -29,11 +29,13 @@ def GUItoggleFanControl(client, userdata, message):
 
   if (GUI_control_fan == 0):
     GUI_control_fan = 1
+    print(f"Toggled GUI fan control, GUI_control_fan is now {GUI_control_fan}")
     # Turn off fan on toggle of fan control, give control of fan to GUI
     GPIO.output(16, GPIO.HIGH)
 
   elif (GUI_control_fan == 1):
     GUI_control_fan = 0
+    print(f"Toggled GUI fan control, GUI_control_fan is now {GUI_control_fan}")
     # Turn off fan on toggle of fan control, give control of fan back to sensor
     GPIO.output(16, GPIO.HIGH)
 
@@ -42,12 +44,14 @@ def GUIturnOnFan(client, userdata, message):
   global GUI_control_fan
   if (GUI_control_fan == 1):
     # Turn fan on
+    print("GUI turning on fan")
     GPIO.output(16, GPIO.LOW)
 
 def GUIturnOffFan(client, userdata, message):
   global GUI_control_fan
   if (GUI_control_fan == 1):
     # Turn fan off
+    print("GUI turning off fan")
     GPIO.output(16, GPIO.HIGH)
 
 def controlFan(client, userdata, message):
@@ -81,11 +85,13 @@ def GUItoggleMotorControl(client, userdata, message):
 
   if (GUI_control_motor == 0):
     GUI_control_motor = 1
+    print(f"Toggled GUI motor control, GUI_control_motor is now {GUI_control_motor}")
     # Turn off motor on toggle of motor control, give control of motor to GUI
     reynaPiNode.stop2()
 
   elif (GUI_control_motor == 1):
     GUI_control_motor = 0
+    print(f"Toggled GUI motor control, GUI_control_motor is now {GUI_control_motor}")
     # Turn off motor on toggle of motor control, give control of motor back to sensor
     reynaPiNode.stop2()
 
@@ -93,12 +99,14 @@ def GUItoggleMotorControl(client, userdata, message):
 def GUIturnOnMotor(client, userdata, message):
   global GUI_control_motor
   if (GUI_control_motor == 1):
+    print("GUI turning on motor2")
     # Turn motor on
     reynaPiNode.go2()
 
 def GUIturnOffMotor(client, userdata, message):
   global GUI_control_motor
   if (GUI_control_motor == 1):
+    print("GUI turning off motor2")
     # Turn motor off
     reynaPiNode.stop2()
 
@@ -125,11 +133,11 @@ def motor2(client, userdata, message):
   print("humidity:", str(humidity))
   humidity = int(humidity)
   if humidity < 65 and GUI_control_motor == 0:
-   reynaPiNode.stop2()
-   return 0
+    reynaPiNode.stop2()
+    return 0
   elif humidity >= 65 and GUI_control_motor == 0:
-   reynaPiNode.go2()
-   return 1
+    reynaPiNode.go2()
+    return 1
 
 subscribedTopicDictionary = {
   "picture" : picture,
