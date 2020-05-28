@@ -6,7 +6,6 @@ import functionalizedRadio
 import json
 from decimal import Decimal
 
-humidity = -99
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
