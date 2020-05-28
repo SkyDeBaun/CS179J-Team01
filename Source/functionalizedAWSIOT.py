@@ -7,7 +7,10 @@ import time
 import subscriptionFunctions
 
 from helpers import getTimeStamp
-from defines import * #TODO Find a better way to do this
+
+from init import DEVICE_TYPE
+from init import THING_NAME
+from init import TOPICS
 
 CLIENT = "333052c1bf"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
@@ -36,27 +39,27 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   return False
 
 
-def AWS_SHADOW_Initialize(): #TODO Test this
-  try:
-    subprocess.call('./copyCertificates.sh')
-  except:
-    CA_CERTIFICATE = "Certificates/root-CA.crt"
-    PRIVATE_KEY = "Certificates/device-private.pem.key"
-    DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
-  # AWS IoT certificate based connection---------------------------------------
-  myShadowClient = AWSIoTMQTTShadowClient(CLIENT)#this can be any arbitrary string
-  myShadowClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
-  myShadowClient.configureCredentials(CA_CERTIFICATE, PRIVATE_KEY, DEVICE_CERTIFICATE)#root ca and certificate used for secure connection
+# def AWS_SHADOW_Initialize(): #TODO Test this
+#   try:
+#     subprocess.call('./copyCertificates.sh')
+#   except:
+#     CA_CERTIFICATE = "Certificates/root-CA.crt"
+#     PRIVATE_KEY = "Certificates/device-private.pem.key"
+#     DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
+#   # AWS IoT certificate based connection---------------------------------------
+#   myShadowClient = AWSIoTMQTTShadowClient(CLIENT)#this can be any arbitrary string
+#   myShadowClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
+#   myShadowClient.configureCredentials(CA_CERTIFICATE, PRIVATE_KEY, DEVICE_CERTIFICATE)#root ca and certificate used for secure connection
 
-  myShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
-  myShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
+#   myShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
+#   myShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
 
-  #connect, subscribe and publish----------------------------------------------------------
-  myShadowClient.connect()
-  shadowHandler = myShadowClient.createShadowHandlerWithName(THING_NAME, True)
-  myMQTTClient = myShadowClient.getMQTTConnection()
-  AWS_MQTT_subscribe(myMQTTClient, None)
-  return (shadowHandler, myMQTTClient)
+#   #connect, subscribe and publish----------------------------------------------------------
+#   myShadowClient.connect()
+#   shadowHandler = myShadowClient.createShadowHandlerWithName(THING_NAME, True)
+#   myMQTTClient = myShadowClient.getMQTTConnection()
+#   AWS_MQTT_subscribe(myMQTTClient, None)
+#   return (shadowHandler, myMQTTClient)
 
 
 def AWS_MQTT_Initialize():
