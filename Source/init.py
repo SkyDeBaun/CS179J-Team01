@@ -6,9 +6,9 @@ import functionalizedAWSIOT
 
 
 
-DEVICE_TYPE = None
-THING_NAME = None
-TOPICS = None
+DEVICE_TYPE = "InitialValueForTesting"
+THING_NAME = "InitialValueForTesting"
+TOPICS = "InitialValueForTesting"
 
 def initializeCameraModule(): #No hardware setup required, just checking the camera is connected
   try:

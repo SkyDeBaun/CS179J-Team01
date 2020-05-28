@@ -13,6 +13,6 @@ def test_parser(argument, expectedReturn):
 	assert init.parse_args(argument) == expectedReturn
 
 @pytest.mark.parametrize("argument, deviceType", [('c', "CameraModule"), ('f', "FanController"), ('m', "Motors"), ('r', "RadioNetwork")])
-def test_parser(argument, deviceType):
+def test_init(argument, deviceType):
 	assert init.initializeSystem(argument).publish("TestingConnection/Topic", "connected", 0) == True
   assert init.DEVICE_TYPE == deviceType
