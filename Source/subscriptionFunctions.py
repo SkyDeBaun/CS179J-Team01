@@ -87,7 +87,7 @@ def GUItoggleMotorControl(client, userdata, message):
   elif (GUI_control_motor == 1):
     GUI_control_motor = 0
     # Turn off motor on toggle of motor control, give control of motor back to sensor
-    reynaPiNode.stop()
+    reynaPiNode.stop2()
 
 
 def GUIturnOnMotor(client, userdata, message):
