@@ -1,14 +1,12 @@
+DEVICE_TYPE = "InitialValueForTesting"
+THING_NAME = "InitialValueForTesting"
+TOPICS = ["picture"]
+
 import subprocess
 import argparse
 import RPi.GPIO as GPIO
 import motorFunctions
 import functionalizedAWSIOT
-
-
-
-DEVICE_TYPE = "InitialValueForTesting"
-THING_NAME = "InitialValueForTesting"
-TOPICS = ["picture"]
 
 def initializeCameraModule(): #No hardware setup required, just checking the camera is connected
   try:
