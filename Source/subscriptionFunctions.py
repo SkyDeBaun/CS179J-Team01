@@ -6,6 +6,7 @@ import functionalizedRadio
 import json
 from decimal import Decimal
 
+radio = functionalizedRadio.initializeRadio()
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
@@ -111,10 +112,9 @@ def subUltrasonic(client, userdate, message):
     print("\n")
 
 #radio specific only--------------------------------------
-def interfaceRadio():
+def interfaceRadio(rad):
     global radio #refers to variable in functionalizedRadio
     radio = functionalizedRadio.initializeRadio()
-    return radio
 
 
 subscribedTopicDictionary = {
