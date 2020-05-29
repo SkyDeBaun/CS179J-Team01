@@ -111,9 +111,10 @@ def subUltrasonic(client, userdate, message):
     print("\n")
 
 #radio specific only--------------------------------------
-def interfaceRadio(rad):
+def interfaceRadio():
     global radio #refers to variable in functionalizedRadio
-    radio = rad
+    radio = functionalizedRadio.initializeRadio()
+    return radio
 
 
 subscribedTopicDictionary = {

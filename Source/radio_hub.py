@@ -58,8 +58,8 @@ if __name__ == "__main__":
 
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
-        radio = functionalizedRadio.initializeRadio()
-        subscriptionFunctions.interfaceRadio(radio) #hack to provide radio object to subscription functions
+        #radio = functionalizedRadio.initializeRadio()
+        radio = subscriptionFunctions.interfaceRadio() #hack to provide radio object to subscription functions
         clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
 

@@ -52,7 +52,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
+  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ', "Temperature": "21.21", "Light": "72" }')) != NotImplemented
 
 # test values for motor test messages as jsons
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
@@ -83,4 +83,22 @@ message4 = message(data4)
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+
+
+
+#Test data
+data5 = '{ "Temperature": ' + "20" + ',"Light": '+ "50" + ' }'
+data6 = '{ "Temperature": ' + "40" + ',"Light": '+ "100" + ' }'
+data7 = '{ "Temperature": ' + "15" + ',"Light": '+ "86" + ' }'
+data8 = '{ "Temperature": ' + "99" + ',"Light": '+ "84" + ' }'
+message1 = message(data5)
+message2 = message(data6)
+message3 = message(data7)
+message4 = message(data8)
+
+
+#test subHumiture-------------------------------?
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
+def test_fanOperational(message, expectedStatus):
+  assert subscriptionFunctions.subscribedTopicDictionary["subRadioNodes"](None, None, message) == expectedStatus
 
