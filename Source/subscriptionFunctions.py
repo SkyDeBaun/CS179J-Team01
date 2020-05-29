@@ -6,7 +6,7 @@ import functionalizedRadio
 import json
 from decimal import Decimal
 
-radio = functionalizedRadio.initializeRadio()
+radio = functionalizedRadio.initializeRadio()#will this conflict with other Things/Pi's? (potential for GPIO issue but this resolves pytest issue)
 
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
@@ -98,7 +98,7 @@ def subRadioNodes(client, userdate, message):
     if (myTemp != -999):  # print only if not default value
         print("Temperature: " + str(myTemp) + " C")
 
-    if (myLight != -999):
+    if (myLight != -1):
         print("Light level: " + str(myLight) + "%")
 
     print("\n")
@@ -111,10 +111,10 @@ def subUltrasonic(client, userdate, message):
     print("Distance: ", int(distance))
     print("\n")
 
-#radio specific only--------------------------------------
+#radio specific only-------------------------------------- not used-> works but radio fails pytest!
 def interfaceRadio(rad):
     global radio #refers to variable in functionalizedRadio
-    radio = functionalizedRadio.initializeRadio()
+    radio = rad
 
 
 subscribedTopicDictionary = {
