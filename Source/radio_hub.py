@@ -58,10 +58,13 @@ if __name__ == "__main__":
 
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
-        #radio = functionalizedRadio.initializeRadio()
-        radio = subscriptionFunctions.interfaceRadio() #hack to provide radio object to subscription functions
+        radio = functionalizedRadio.initializeRadio()
+        radio.send(1, "0", attempts=1, waitTime=100) #hack to overcome new issue - radios dead until radio.send!
+
+        #subscriptionFunctions.interfaceRadio(radio) #hack to provide radio object to subscription functions
         clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
+
 
         while True:
             # Every 1 seconds check for packets----------------------------------
