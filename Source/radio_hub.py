@@ -25,11 +25,11 @@ sensorNodes = {}  # store discovered active nodes on the radio net into a list
 numberNodes = 0  # save number of nodes on radio transceiver network
 
 temp = -999.00  # default start values
-lightLevel = -999
+lightLevel = -1
 
 # default state JSON object avoids rare instance of this not being initialized yet (ie if initial data takes longer than 3 seconds )
 JSONPayload = '{"Light":' + str(
-    lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(-999) + '"}'
+    lightLevel) + ', "Temperature":  ' + str(temp) + ', "Time": "' + str(0) + '"}'
 
 
 #functions-------------------------------------------------------
@@ -60,8 +60,6 @@ if __name__ == "__main__":
         # ---------------------------------------------------------------------------------------
         radio = functionalizedRadio.initializeRadio()
         radio.send(1, "0", attempts=1, waitTime=100) #hack to overcome new issue - radios dead until radio.send!
-
-        #subscriptionFunctions.interfaceRadio(radio) #hack to provide radio object to subscription functions
         clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
 
@@ -149,7 +147,7 @@ if __name__ == "__main__":
                 # reset dict and shadow
                 sensorNodes.clear()  # clear dict of active nodes -> refresh the dictionary
                 temp = -999.00  #reset to default start values
-                lightLevel = -999
+                lightLevel = -1
 
             delay = 0.5  # 1/2 second interval
             rx_counter += delay
