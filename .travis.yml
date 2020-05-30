@@ -8,6 +8,7 @@ install:
   - pip install boto3
   - pip install fake_rpi
   - pip install rpi-rfm69
+  - pip install spidev
 
 script:
 #  - python Tests/runTests.py
