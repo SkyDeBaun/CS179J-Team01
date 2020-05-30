@@ -1,11 +1,12 @@
 import sys
 import fake_rpi
 import fake_spi
+import fake_radio
 
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
 sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
-sys.modules['spidev'] = fake_spi.fake_spi
-
+#sys.modules['spidev'] = fake_spi.fake_spi
+sys.modules['RFM69'] = fake_radio.Radio
 
 import subscriptionFunctions
 import shadowFunctions
