@@ -7,7 +7,7 @@ class fake_spidev:
         print("Hello from fake spi.open")
 
     def xfer(self):
-        print("Hello from fake spi.xfer")
-        myList = [127]
-        return myList
+        print("Hello f\0rom fake spi.xfer")
+        myList = ['hello']
+        #return myList
 
