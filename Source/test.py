@@ -1,8 +1,10 @@
 import sys
 import fake_rpi
+import fake_spi
 
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
 sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+sys.modules['spidev'] = fake_spi.fake_spi
 
 
 import subscriptionFunctions
