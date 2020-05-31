@@ -8,7 +8,7 @@ import init
 import pytest
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
-@pytest.mark.parametrize("argument, expectedReturn", [('-c', 'c'), ('-C', 'c'), ('-f', 'f'), ('-m', 'm'), ('-r', 'r')])
+@pytest.mark.parametrize("argument, expectedReturn", [('c', 'c'), ('C', 'c'), ('f', 'f'), ('m', 'm'), ('r', 'r')])
 def test_parser(argument, expectedReturn):
 	assert init.parse_args(argument) == expectedReturn
 
