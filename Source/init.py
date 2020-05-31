@@ -1,7 +1,7 @@
 DEVICE_TYPE = "InitialValueForTesting"
 THING_NAME = "InitialValueForTesting"
 TOPICS = ["picture"]
-
+import sys
 import subprocess
 import argparse
 import RPi.GPIO as GPIO
@@ -58,6 +58,7 @@ def parse_args(args):
   arguments = vars(parser.parse_args(args))
   for k in arguments:
     if arguments[k]:
+      print(k)
       return k
 
 def initializeSystem(flag):
@@ -97,3 +98,5 @@ def initializeSystem(flag):
   MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
   return (MQTTClient, INIT_FUNCTIONS, STATE_MACHINE, CLEANUP_FUNCTION)
 
+# if __name__ == "__main__":
+#   parse_args(sys.argv[1:])
