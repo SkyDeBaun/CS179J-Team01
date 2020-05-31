@@ -91,6 +91,9 @@ if __name__ == "__main__":
 
     # Initialize MQTT client
     myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
+    myMQTTClient.subscribe("MotorController/reynaPi/GUItoggleMotorControl", 1, subscriptionFunctions.GUItoggleMotorControl)
+    myMQTTClient.subscribe("MotorController/reynaPi/GUIturnOffMotor", 1, subscriptionFunctions.GUIturnOffMotor)
+    myMQTTClient.subscribe("MotorController/reynaPi/GUIturnOnMotor", 1, subscriptionFunctions.GUIturnOnMotor)
     #myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, subscriptionFunctions.controlFan)
     #myMQTTClient.subscribe("ryan_pi/GUItoggleFanControl", 1, subscriptionFunctions.GUItoggleFanControl)
     #myMQTTClient.subscribe("ryan_pi/GUIturnOffFan", 1, subscriptionFunctions.GUIturnOffFan)
@@ -145,8 +148,9 @@ if __name__ == "__main__":
 
     # test insert row with entryNumber of 1
     entryNumber_tempHum = 1
-    try:
-        while True:
+    
+    while True:
+        try:
             temperature = None
             humidity = None
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
@@ -173,16 +177,12 @@ if __name__ == "__main__":
             # Sleep for 2 seconds, only grab values every 2 seconds
             sleep(2)
 
-    except KeyboardInterrupt:
-       print("Keyboard interrupt, exiting program")
-       GPIO.cleanup()
+        except KeyboardInterrupt:
+            print("Keyboard interrupt, exiting program")
+            GPIO.cleanup()
+            exit()
 
-    except:
-        print("Error, exiting program")
-        GPIO.cleanup()
-        exit()
-
-    finally:
-        print("Catch all executed")
-        GPIO.cleanup()
-        exit()
+        except:
+            print("Error publishing")
+            #GPIO.cleanup()
+            #exit()
