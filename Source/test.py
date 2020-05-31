@@ -88,3 +88,9 @@ def test_fanOperational(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
 
 
+
+#radio function test
+@pytest.mark.parametrize("message, expectedStatus", [(message3, 1), (message3, 1)])
+def test_subHumiture(message, expectedStatus):
+  assert subscriptionFunctions.subscribedTopicDictionary["subHumiture"](None, None, message) == expectedStatus
+
