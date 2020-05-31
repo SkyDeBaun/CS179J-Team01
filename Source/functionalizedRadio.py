@@ -8,7 +8,7 @@ node_id = 1  # hub node (this)
 network_id = 100  # 1 - 255
 key = "sampleEncryptKey"  # must be shared accross all radios on the radio net
 
-testConfig = False
+testConfig = True
 
 def initializeRadio():
     if testConfig:
