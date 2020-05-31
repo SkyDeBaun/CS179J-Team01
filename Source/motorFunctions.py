@@ -2,9 +2,6 @@ import time
 import RPi.GPIO as GPIO
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from datetime import date, datetime
-import functionalizedAWSIOT
-import subscriptionFunctions
-from defines import *
 import json
 
 
