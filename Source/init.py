@@ -20,7 +20,7 @@ def initializeCameraModule(myMQTTClient): #No hardware setup required, just chec
   except:
     print("Camera check only works on Raspberry Pi")
   finally:
-    return
+    return "camera"
 
 def initializeFan(myMQTTClient):
   # Setup pins
@@ -55,6 +55,8 @@ def parse_args(args):
   flags.add_argument('-f', '-F', help='Fans', action='store_true')
   flags.add_argument('-m', '-M', help='Motors', action='store_true')
   flags.add_argument('-r', '-R', help='Radio', action='store_true')
+  flags.add_argument('-t', '-T', help='Testing', action='store_true') #FIXME Comment out before production 
+
   arguments = vars(parser.parse_args(args))
   for k in arguments:
     if arguments[k]:
@@ -76,6 +78,7 @@ def initializeSystem(flag):
     TOPICS = ["picture"]
     INIT_FUNCTIONS = [initializeCameraModule]
     STATE_MACHINE = deviceSMs.cameraSM
+    CLEANUP_FUNCTION = cleanup.emptyCleanup
   elif flag == 'f':
     DEVICE_TYPE = "FanController"
     THING_NAME = "RyanPi"
@@ -92,6 +95,13 @@ def initializeSystem(flag):
     DEVICE_TYPE = "RadioNetwork"
     THING_NAME = "SkyOnAPi"
     TOPICS = ["ultrasonic"]
+  elif flag == 't':
+    DEVICE_TYPE = "testing"
+    THING_NAME = "testing"
+    TOPICS = ["camera"]
+    INIT_FUNCTIONS = [initializeCameraModule]
+    STATE_MACHINE = deviceSMs.SMtest
+    CLEANUP_FUNCTION = cleanup.emptyCleanup
   else:
     print("Invalid flag check failed")
     exit(1)

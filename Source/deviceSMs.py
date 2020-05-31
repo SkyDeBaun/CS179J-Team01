@@ -13,3 +13,8 @@ def motorSM(MQTTClient):
 	payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
   #TODO Update to correct topic for publishing
 	functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "ReynaPi/ultrasonic", payload)
+
+
+def SMtest(MQTTClient):
+  if functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "testing", "testing state machine"):
+    return "Success"

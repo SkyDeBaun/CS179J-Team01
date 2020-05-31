@@ -1,8 +1,7 @@
 import motorFunctions
 
 def emptyCleanup():
-  print("Deallocating project resources")
-  exit(0)
+  return ("Deallocating project resources")
 
 
 def cleanMotors():
