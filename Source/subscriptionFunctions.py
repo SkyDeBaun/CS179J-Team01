@@ -72,7 +72,8 @@ def subHumiture(client, userdate, message):
     payloadInfo = json.loads(message.payload)   
     humidity = payloadInfo["humidity"]
     temperature = payloadInfo["temperature"]
-
+    global radio
+    
     print("\nRyan's Humiture Data:")
     print("Temperature: ", str(temperature), "\tHumidity:", str(humidity))
     if float(humidity) > 85.0:  # print warning if threshold reached
