@@ -59,15 +59,13 @@ if __name__ == "__main__":
         # initialize radio transceiver------------------------------------------------------------
         # ---------------------------------------------------------------------------------------
         radio = functionalizedRadio.initializeRadio()
-        radio.send(1, "0", attempts=1, waitTime=100) #hack to overcome new issue - radios dead until radio.send!
+
+        #prime the network -> workaround for strange inability to detect radios until subscription happens?
+        radio.send(1, "1", attempts=1, waitTime=100) #hack to overcome new issue - radios dead until radio.send!?
+
         clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
-
-        #myMQTTClient.subscribe("Pi_sense01/data", 0, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
-        #myMQTTClient.subscribe("ryan_pi/data", 0, subscriptionFunctions.subHumiture)
-        #myMQTTClient.subscribe("ReynaPi/ultrasonic", 0, subscriptionFunctions.subUltrasonic)
-
-
+        
         while True:
             # Every 1 seconds check for packets----------------------------------
             if rx_counter >= 1:
