@@ -89,7 +89,7 @@ def AWS_MQTT_publish(MQTTClient, topic, data):
     # if topic not in TOPICS:
     #     TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
     #TODO Add a timestamp to the message
-    MQTTClient.publish(DEVICE_TYPE + "/" + THING_NAME + "/" + topic, data, 1)
+    return MQTTClient.publish(DEVICE_TYPE + "/" + THING_NAME + "/" + topic, data, 1)
 
 def AWS_MQTT_Job():
     #TODO
