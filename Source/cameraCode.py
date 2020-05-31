@@ -1,4 +1,3 @@
-import initializeDeviceType
 import subprocess
 from helpers import getTimeStamp
 
