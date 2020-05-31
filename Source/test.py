@@ -90,7 +90,7 @@ def test_fanOperational(message, expectedStatus):
 
 
 #radio function test
-@pytest.mark.parametrize("message, expectedStatus", [(message3, 1), (message3, 1)])
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message3, 1)])
 def test_subHumiture(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["subHumiture"](None, None, message) == expectedStatus
 
