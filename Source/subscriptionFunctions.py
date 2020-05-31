@@ -73,19 +73,25 @@ def subHumiture(client, userdate, message):
     humidity = payloadInfo["humidity"]
     temperature = payloadInfo["temperature"]
     global radio
-    
+
     print("\nRyan's Humiture Data:")
     print("Temperature: ", str(temperature), "\tHumidity:", str(humidity))
     if float(humidity) > 85.0:  # print warning if threshold reached
         print("HIGH HUMIDITY THRESHOLD REACHED!\n")
 
-    if float(humidity) > 80:
-        if radio.send(21, "1", attempts=2, waitTime=100):
-            print ("LED Control Message -> On")        
-    else:
-        if radio.send(21, "0", attempts=2, waitTime=100):
-            #print ("LED Control Message -> Off")
-            print("")
+    try:
+
+        if float(humidity) > 80:
+            if radio.send(21, "1", attempts=2, waitTime=100):
+                print ("LED Control Message -> On")  
+                return 1   
+        else:
+            if radio.send(21, "0", attempts=2, waitTime=100):
+                #print ("LED Control Message -> Off")
+                print("")
+                return 0
+    except:
+        print ("Radio Error Occured")
 
 
 # subscribe to Sky's radio network data------------------
