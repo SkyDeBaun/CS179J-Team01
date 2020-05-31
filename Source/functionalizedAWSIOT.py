@@ -32,9 +32,9 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
         return True
   else:
     #TODO
-    print("Custom topic subscription for testing")
-    topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
-    if MQTTClient.subscribe(topicPath, 1, function):
+    print("Custom topic subscription")# for testing")
+    #topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
+    if MQTTClient.subscribe(topic, 1, function):
       return True
   return False
 
@@ -89,7 +89,7 @@ def AWS_MQTT_publish(MQTTClient, topic, data):
     # if topic not in TOPICS:
     #     TOPICS.append(topic) #FIXME Not sure if we will be adding new topics
     #TODO Add a timestamp to the message
-    return MQTTClient.publish(DEVICE_TYPE + "/" + THING_NAME + "/" + topic, data, 1)
+    return MQTTClient.publish(topic, data, 1)
 
 def AWS_MQTT_Job():
     #TODO

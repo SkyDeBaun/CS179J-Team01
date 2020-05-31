@@ -86,38 +86,3 @@ def sensor():
 		averageDistance = averageDistance+distance
 	averageDistance = averageDistance/5
 	return averageDistance
-
-
-if __name__ == "__main__" :
-
-	try:
-
-
-		myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-
-		while True:
-
-			#publish sensor data to MotorController/reynaPi/ultrasonic
-			#get the timestamp
-			now = datetime.utcnow()
-			now_str = now.strftime('%Y-%m-%dT%H:%M%SZ')
-			#get distance from ultrasonic sensor
-			dis = sensor()
-			payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
-
-			#publish data to AWS topic ReynaPi/ultrasonic
-			functionalizedAWSIOT.AWS_MQTT_publish(myMQTTClient,TOPICS[0],payload)
-
-			#subscribe ryan_pi/data using callback functions from subscriptionFunctions
-			#already subscribed to MotorController/reynaPi/ultrasonic
-			myMQTTClient.subscribe("ryan_pi/data",1,subscriptionFunctions.motor2)
-
-
-	except KeyboardInterrupt:
-		stop1()
-		stop2()
-
-	finally:
-		stop1()
-		stop2()
-		destroy()
