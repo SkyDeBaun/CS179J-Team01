@@ -1,5 +1,5 @@
 import cameraCode
-import reynaPiNode
+import motorFunctions
 import helpers
 import RPi.GPIO as GPIO
 import json
@@ -34,10 +34,10 @@ def ultrasonic(client, userdate, message):
   payloadInfo = json.loads(message.payload)
   distance = payloadInfo["distance"]
   if distance<15:
-    reynaPiNode.stop1()
+    motorFunctions.stop1()
     return 0
   else:
-    reynaPiNode.go1()
+    motorFunctions.go1()
     return 1
 
 def motor2(client, userdate, message):
@@ -46,10 +46,10 @@ def motor2(client, userdate, message):
   humidity = payloadInfo["humidity"]
   humidity = int(humidity)
   if humidity < 65:
-   reynaPiNode.stop2()
+   motorFunctions.stop2()
    return 0
   else:
-   reynaPiNode.go2()
+   motorFunctions.go2()
    return 1
 
 subscribedTopicDictionary = {
