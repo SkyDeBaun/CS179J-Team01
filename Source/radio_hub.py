@@ -63,6 +63,10 @@ if __name__ == "__main__":
         clear()
         print("RADIO NETWORK INITIALIZED:\n\n")
 
+        myMQTTClient.subscribe("Pi_sense01/data", 0, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
+        myMQTTClient.subscribe("ryan_pi/data", 0, subscriptionFunctions.subHumiture)
+        myMQTTClient.subscribe("ReynaPi/ultrasonic", 0, subscriptionFunctions.subUltrasonic)
+
 
         while True:
             # Every 1 seconds check for packets----------------------------------
@@ -135,9 +139,9 @@ if __name__ == "__main__":
                     myMQTTClient.publish("Pi_sense01/data", JSONPayload, 0)
 
                 # get subcriptions----------------------------------------------------
-                myMQTTClient.subscribe("Pi_sense01/data", 0, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
-                myMQTTClient.subscribe("ryan_pi/data", 0, subscriptionFunctions.subHumiture)
-                myMQTTClient.subscribe("ReynaPi/ultrasonic", 0, subscriptionFunctions.subUltrasonic)
+                #myMQTTClient.subscribe("Pi_sense01/data", 0, subscriptionFunctions.subRadioNodes) #verifies my ealier publish + prints to console
+                #myMQTTClient.subscribe("ryan_pi/data", 0, subscriptionFunctions.subHumiture)
+                #myMQTTClient.subscribe("ReynaPi/ultrasonic", 0, subscriptionFunctions.subUltrasonic)
                                 
 
             # reset dictionary of nodes--------------------------------------------------
