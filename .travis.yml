@@ -13,6 +13,6 @@ before_script:
   - echo -e $AWS_PRIVATE_KEY > $TRAVIS_BUILD_DIR/Certificates/device-private.pem.key
   - echo -e $DEVICE_CERT > $TRAVIS_BUILD_DIR/Certificates/device-certificate.pem.crt
 script:
-  - pytest Source/testInit.py
+  - pytest -v Source/testInit.py
   - pytest Source/testTravisCerts.py
   - pytest Source/test.py

@@ -18,3 +18,4 @@ def motorSM(MQTTClient):
 def SMtest(MQTTClient):
   if functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "testing", "testing state machine"):
     return "Success"
+  return "faileure"
