@@ -8,9 +8,12 @@ node_id = 1  # hub node (this)
 network_id = 100  # 1 - 255
 key = "sampleEncryptKey"  # must be shared accross all radios on the radio net
 
+testConfig = False
 
 def initializeRadio():
-    radio = Radio(FREQ_915MHZ, node_id, network_id, key, True, False)# use for pytest -> fails for production
-    #radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) #use for production -> kwargs fails for pytest
+    if testConfig:
+        radio = Radio(FREQ_915MHZ, node_id, network_id, key, True, False)# use for pytest -> fails for production
+    else:
+        radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) #use for production -> kwargs fails for pytest
 
     return radio
