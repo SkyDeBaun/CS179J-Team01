@@ -79,18 +79,19 @@ def subHumiture(client, userdate, message):
     if float(humidity) > 85.0:  # print warning if threshold reached
         print("HIGH HUMIDITY THRESHOLD REACHED!\n")
 
-    try:
-
         if float(humidity) > 80:
-            if radio.send(21, "1", attempts=2, waitTime=100):
-                print ("LED Control Message -> On")  
+            try:
+                if radio.send(21, "1", attempts=2, waitTime=100):
+                    print ("LED Control Message -> On")  
+            except:
                 return 1   
         else:
-            if radio.send(21, "0", attempts=2, waitTime=100):
-                #print ("LED Control Message -> Off")
-                print("")
+            try:
+                if radio.send(21, "0", attempts=2, waitTime=100):
+                    #print ("LED Control Message -> Off")
+                    print("")
+            except:
                 return 0
-    except:
         print ("Radio Error Occured")
 
 
