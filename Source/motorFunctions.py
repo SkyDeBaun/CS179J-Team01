@@ -102,7 +102,7 @@ if __name__ == "__main__" :
 			now = datetime.utcnow()
 			now_str = now.strftime('%Y-%m-%dT%H:%M%SZ')
 			#get distance from ultrasonic sensor
-			dis = sensor(Trig,Echo)
+			dis = sensor()
 			payload = '{ "timestamp": "' + now_str + '","distance": ' + str(dis) + '}'
 
 			#publish data to AWS topic ReynaPi/ultrasonic

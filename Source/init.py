@@ -8,7 +8,10 @@ import RPi.GPIO as GPIO
 import motorFunctions
 import functionalizedAWSIOT
 
-def initializeCameraModule(): #No hardware setup required, just checking the camera is connected
+import deviceSMs
+import cleanup
+
+def initializeCameraModule(myMQTTClient): #No hardware setup required, just checking the camera is connected
   try:
     output = subprocess.run(["/opt/vc/bin/vcgencmd", "get_camera"], universal_newlines=True, stdout=subprocess.PIPE)
     if output.stdout.find("0") :
@@ -19,7 +22,7 @@ def initializeCameraModule(): #No hardware setup required, just checking the cam
   finally:
     return
 
-def initializeFan():
+def initializeFan(myMQTTClient):
   # Setup pins
   GPIO.setmode(GPIO.BCM)
   GPIO.setwarnings(False)
@@ -41,7 +44,7 @@ def initializeTripwire(myMQTTClient):
   GPIO.add_event_detect(21, GPIO.FALLING, callback=triggeredWire, bouncetime=5000)
 
 
-def intializeMotors():
+def intializeMotors(myMQTTClient):
 	GPIO.setwarnings(False)
 	motorFunctions.setup()
 
@@ -52,43 +55,45 @@ def parse_args(args):
   flags.add_argument('-f', '-F', help='Fans', action='store_true')
   flags.add_argument('-m', '-M', help='Motors', action='store_true')
   flags.add_argument('-r', '-R', help='Radio', action='store_true')
-  args = vars(parser.parse_args())
-  for k in args:
-    if args[k]:
+  arguments = vars(parser.parse_args(args))
+  for k in arguments:
+    if arguments[k]:
       return k
 
 def initializeSystem(flag):
   global DEVICE_TYPE
   global THING_NAME
   global TOPICS
+  INIT_FUNCTIONS = []
+  STATE_MACHINE = None
+  CLEANUP_FUNCTION = cleanup.emptyCleanup
   MQTTClient = None
 
   if flag == 'c':
     DEVICE_TYPE = "CameraModule"
     THING_NAME = "Camera1"
     TOPICS = ["picture"]
-    MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-    initializeCameraModule()
+    INIT_FUNCTIONS = [initializeCameraModule]
+    STATE_MACHINE = deviceSMs.cameraSM
   elif flag == 'f':
     DEVICE_TYPE = "FanController"
     THING_NAME = "RyanPi"
     TOPICS = ["fan"]
-    MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-    initializeFan()
-    initializeTripwire(MQTTClient)
+    INIT_FUNCTIONS = [initializeFan, initializeTripwire]
   elif flag == 'm':
     DEVICE_TYPE = "Motors"
     THING_NAME = "ReynaPi"
     TOPICS = ["ultrasonic"]
-    MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
+    INIT_FUNCTIONS = [intializeMotors]
+    STATE_MACHINE = deviceSMs.motorSM
+    CLEANUP_FUNCTION = cleanup.cleanMotors
   elif flag == 'r':
     DEVICE_TYPE = "RadioNetwork"
     THING_NAME = "SkyOnAPi"
     TOPICS = ["ultrasonic"]
-    MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
   else:
     print("Invalid flag check failed")
     exit(1)
-
-  return MQTTClient
+  MQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
+  return (MQTTClient, INIT_FUNCTIONS, STATE_MACHINE, CLEANUP_FUNCTION)
 
