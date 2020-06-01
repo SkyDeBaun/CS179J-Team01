@@ -12,7 +12,7 @@ from init import DEVICE_TYPE
 from init import THING_NAME
 from init import TOPICS
 
-CLIENT = "333052c1bf"
+CLIENT = THING_NAME
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 
