@@ -82,19 +82,24 @@ def initializeSystem(flag):
   elif flag == 'f':
     DEVICE_TYPE = "FanController"
     THING_NAME = "RyanPi"
-    TOPICS = ["fan"]
-    INIT_FUNCTIONS = [initializeFan, initializeTripwire]
+    TOPICS = ["fan"] #TODO Put topics (thatll have this devie's name path) here
+    INIT_FUNCTIONS = [initializeFan, initializeTripwire] #TODO Any functions that will set up hardware or subscribe to other topics
+    STATE_MACHINE = deviceSMs.fanSM #TODO write fan sm in deviceSMs
+    CLEANUP_FUNCTION = cleanup.emptyCleanup #TODO or write personal cleanup (disable gpio pins, clear table, etc)
   elif flag == 'm':
     DEVICE_TYPE = "Motors"
     THING_NAME = "ReynaPi"
-    TOPICS = ["ultrasonic"]
-    INIT_FUNCTIONS = [intializeMotors]
-    STATE_MACHINE = deviceSMs.motorSM
-    CLEANUP_FUNCTION = cleanup.cleanMotors
+    TOPICS = ["ultrasonic"] #TODO Put topics (thatll have this devie's name path) here
+    INIT_FUNCTIONS = [intializeMotors] #TODO Any functions that will set up hardware or subscribe to other topics
+    STATE_MACHINE = deviceSMs.motorSM #TODO write SM in deviceSMs (your normal while loop)
+    CLEANUP_FUNCTION = cleanup.cleanMotors #TODO or write personal cleanup (disable gpio pins, clear table, etc)
   elif flag == 'r':
     DEVICE_TYPE = "RadioNetwork"
     THING_NAME = "SkyOnAPi"
-    TOPICS = ["ultrasonic"]
+    TOPICS = ["ultrasonic"]#TODO Put topics (thatll have this devie's name path) here
+    INIT_FUNCTIONS = [intializeMotors] #TODO Any functions that will set up hardware or subscribe to other topics
+    STATE_MACHINE = deviceSMs.motorSM #TODO write SM in deviceSMs (your normal while loop)
+    CLEANUP_FUNCTION = cleanup.cleanMotors #TODO or write personal cleanup (disable gpio pins, clear table, etc)
   elif flag == 't':
     DEVICE_TYPE = "testing"
     THING_NAME = "testing"
