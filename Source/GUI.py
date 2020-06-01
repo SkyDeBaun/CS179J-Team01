@@ -33,11 +33,11 @@ class StartPage(tk.Frame):
         button5 = ttk.Button(self, text="Turn Fan Off", command=turnOffFan)
         button5.pack()
         button6 = ttk.Button(self, text="Toggle Motor Control",
-                             command=toggleFanControl)
+                             command=toggleMotorControl)
         button6.pack()
-        button7 = ttk.Button(self, text="Turn Motor On", command=turnOffFan)
+        button7 = ttk.Button(self, text="Turn Motor On", command=turnMotorOn)
         button7.pack()
-        button8 = ttk.Button(self, text="Turn Motor Off", command=turnOffFan)
+        button8 = ttk.Button(self, text="Turn Motor Off", command=turnMotorOff)
         button8.pack()
         button9 = ttk.Button(self, text="Exit Program", command=quitProgram)
         button9.pack()
@@ -100,32 +100,40 @@ sub1 = plt.subplot(2, 3, 1)
 sub2 = plt.subplot(2, 3, 2)
 sub3 = plt.subplot(2, 3, 3)
 #sub4 = plt.subplot(2, 2, 4)
-sub1.set_title("Average Temperature: Waiting...\nCurrent Temperature: Waiting...\nTemperature vs. Entries")
+sub1.set_title(
+    "Average Temperature: Waiting...\nCurrent Temperature: Waiting...\n \nTemperature vs. Entries", fontsize=10)
 sub1.set_ylabel("Temperature (Celcius)")
 sub1.set_xlabel("Entries")
-sub2.set_title("Average Humidity: Waiting...\nCurrent Humidity: Waiting...\nHumidity vs. Entries")
+sub2.set_title(
+    "Average Humidity: Waiting...\nCurrent Humidity: Waiting...\n \nHumidity vs. Entries", fontsize=10)
 sub2.set_ylabel("Humidity (%)")
 sub2.set_xlabel("Entries")
-sub3.set_title("Max Light Level: Waiting...\nCurrent Light Level: Waiting...\nLight Level vs. Entries")
+sub3.set_title(
+    "Max Light Level: Waiting...\nCurrent Light Level: Waiting...\n \nLight Level vs. Entries", fontsize=10)
 sub3.set_ylabel("Light Level (%)")
 sub3.set_xlabel("Entries")
 
 # Plot once to set labels
-sub1.plot(temperatureGraph_x, temperatureGraph_y, color='blue', label='Temperature')
+sub1.plot(temperatureGraph_x, temperatureGraph_y,
+          color='blue', label='Temperature')
 sub1.legend(loc='upper right')
-sub1.set_xlim(left=max(0, entryCountTempHum - 50), right=entryCountTempHum + 25)
+sub1.set_xlim(left=max(0, entryCountTempHum - 50),
+              right=entryCountTempHum + 25)
 sub2.plot(humidityGraph_x, humidityGraph_y, color='red', label='Humidity')
 sub2.legend(loc='upper right')
-sub2.set_xlim(left=max(0, entryCountTempHum - 50), right=entryCountTempHum + 25)
+sub2.set_xlim(left=max(0, entryCountTempHum - 50),
+              right=entryCountTempHum + 25)
 sub3.plot(lightLevel_x, lightLevel_y, color='green', label='Light Level')
 sub3.legend(loc='upper right')
-sub3.set_xlim(left=max(0, entryCountLightLevel - 50), right=entryCountLightLevel + 25)
+sub3.set_xlim(left=max(0, entryCountLightLevel - 50),
+              right=entryCountLightLevel + 25)
 
 
 # Animation function to update plot
 
 
 def animate(i):
+    global entryCountTempHum
     global pause_start
     global time
     global temperatureGraph_x
@@ -134,32 +142,35 @@ def animate(i):
     global humidityGraph_y
     global lightLevel_x
     global lightLevel_y
-    global avgHumidity 
+    global avgHumidity
     global avgTemperature
-    global currHumidity 
+    global currHumidity
     global currTemperature
     global maxLightLevel
     global currLightLevel
     global sub1
     global sub2
     global sub3
-    
 
-    # Simple variable check to see if we pause graphing or not
-    if (pause_start == 0):
-
+    try:
         sub1.plot(temperatureGraph_x, temperatureGraph_y, color='blue')
-        sub1.set_xlim(left=max(0, entryCountTempHum - 50), right=entryCountTempHum + 25)
-
+        sub1.set_xlim(left=max(0, entryCountTempHum - 50),
+                      right=entryCountTempHum + 25)
         sub2.plot(humidityGraph_x, humidityGraph_y, color='red')
-        sub2.set_xlim(left=max(0, entryCountTempHum - 50), right=entryCountTempHum + 25)
-        
+        sub2.set_xlim(left=max(0, entryCountTempHum - 50),
+                      right=entryCountTempHum + 25)
         sub3.plot(lightLevel_x, lightLevel_y, color='green')
-        sub3.set_xlim(left=max(0, entryCountLightLevel - 50), right=entryCountLightLevel + 25)
-        
-        sub1.set_title(f"Average Temperature: {avgTemperature}\nCurrent Temperature: {currTemperature}\nTemperature vs. Entries")
-        sub2.set_title(f"Average Humidity: {avgHumidity}\nCurrent Humidity: {currHumidity}\nHumidity vs. Entries")
-        sub3.set_title(f"Max Light Level: {maxLightLevel}\nCurrent Light Level: {currLightLevel}\nLight Level vs. Entries")
+        sub3.set_xlim(left=max(0, entryCountLightLevel - 50),
+                      right=entryCountLightLevel + 25)
+        sub1.set_title(
+            f"Average Temperature: {avgTemperature}\nCurrent Temperature: {currTemperature}\n \nTemperature vs. Entries", fontsize=10)
+        sub2.set_title(
+            f"Average Humidity: {avgHumidity}\nCurrent Humidity: {currHumidity}\n \nHumidity vs. Entries", fontsize=10)
+        sub3.set_title(
+            f"Max Light Level: {maxLightLevel}\nCurrent Light Level: {currLightLevel}\n \nLight Level vs. Entries", fontsize=10)
+
+    except:
+        print(f"Error occurred in plotting data at tempHumEntryCount = {entryCountTempHum}")
 
     # Increment time
     time += 1
@@ -182,27 +193,28 @@ def reset_graphs():
     global lightLevel_y
     #global tripwireActivationCount
     global fig
-    global maxLightLevel 
+    global maxLightLevel
     global currLightLevel
     global currTemperature
-    global currHumidity 
-    global avgHumidity 
-    global avgTemperature 
-    
+    global currHumidity
+    global avgHumidity
+    global avgTemperature
 
     sub1.clear()
     sub2.clear()
     sub3.clear()
-    sub1.set_title("Average Temperature: Waiting...\nCurrent Temperature: Waiting...\nTemperature vs. Entries")
+    sub1.set_title(
+        "Average Temperature: Waiting...\nCurrent Temperature: Waiting...\n \nTemperature vs. Entries", fontsize=10)
     sub1.set_ylabel("Temperature (Celcius)")
     sub1.set_xlabel("Entries")
-    sub2.set_title("Average Humidity: Waiting...\nCurrent Temperature: Waiting...\nHumidity vs. Entries")
+    sub2.set_title(
+        "Average Humidity: Waiting...\nCurrent Temperature: Waiting...\n \nHumidity vs. Entries", fontsize=10)
     sub2.set_ylabel("Humidity (Percentage)")
     sub2.set_xlabel("Entries")
-    sub3.set_title("Max Light Level: Waiting...\nCurrent Light Level: Waiting...\nLight Level vs. Entries")
+    sub3.set_title(
+        "Max Light Level: Waiting...\nCurrent Light Level: Waiting...\n \nLight Level vs. Entries", fontsize=10)
     sub3.set_ylabel("Light Level (%)")
     sub3.set_xlabel("Entries")
-    
 
     entryCountTempHum = 0
     entryCountLightLevel = 0
@@ -218,9 +230,7 @@ def reset_graphs():
     humidityGraph_y.clear()
     lightLevel_x.clear()
     lightLevel_y.clear()
-    
-    
-    
+
     #tripwireActivationCount = 0
     #fig.suptitle(f"Tripwire Activations: {tripwireActivationCount}", fontsize=12)
 
@@ -239,7 +249,7 @@ def humidityTempUpdate(self, params, packet):
     global humidityGraph_y
     global currHumidity
     global currTemperature
-    
+
     payloadDict = json.loads(packet.payload)
 
     Temp = Decimal(payloadDict["temperature"])
@@ -257,31 +267,32 @@ def humidityTempUpdate(self, params, packet):
     humidityGraph_x.append(entryCountTempHum)
     currTemperature = Temp
     currHumidity = Humidity
-    
 
-def lightLevelUpdate(self, params, packet): 
+
+def lightLevelUpdate(self, params, packet):
     global sub3
     global entryCountLightLevel
     global lightLevel_x
     global lightLevel_y
-    global maxLightLevel 
+    global maxLightLevel
     global currLightLevel
-    
+
     payloadDict = json.loads(packet.payload)
     lightLevel = Decimal(payloadDict["Light"])
     lightLevel = round(lightLevel, 2)
-    
+
     # Increment total number of entries stored in program
     entryCountLightLevel += 1
 
     # Push values to arrays for plotting
     lightLevel_y.append(lightLevel)
     lightLevel_x.append(entryCountLightLevel)
-    
+
     # Update max and curr light level
     maxLightLevel = max(lightLevel, maxLightLevel)
     currLightLevel = lightLevel
     
+
 
 def updateAverages(time):
     global avgHumidity
@@ -323,34 +334,40 @@ def updateAverages(time):
             print("An exception occurred in update averages")
 
 
-#def updateActivationCount(client, userdate, message):
+# def updateActivationCount(client, userdate, message):
     #global tripwireActivationCount
     #tripwireActivationCount += 1
     #fig.suptitle(f"Tripwire Activations: {tripwireActivationCount}", fontsize=12)
 
 
 def toggleFanControl():
-    myMQTTClient.publish("RyanPi/ryan_pi/GUItoggleFanControl", "payload doesn't matter", 0)
+    myMQTTClient.publish("RyanPi/ryan_pi/GUItoggleFanControl",
+                         "payload doesn't matter", 0)
 
 
 def toggleMotorControl():
-    myMQTTClient.publish("MotorController/reynaPi/GUItoggleMotorControl", "payload doesn't matter", 0)
+    myMQTTClient.publish(
+        "MotorController/reynaPi/GUItoggleMotorControl", "payload doesn't matter", 0)
 
 
 def turnOnFan():
-    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOnFan", "payload doesn't matter", 0)
+    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOnFan",
+                         "payload doesn't matter", 0)
 
 
 def turnOffFan():
-    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOffFan", "payload doesn't matter", 0)
+    myMQTTClient.publish("RyanPi/ryan_pi/GUIturnOffFan",
+                         "payload doesn't matter", 0)
 
 
 def turnMotorOn():
-    myMQTTClient.publish("MotorController/reynaPi/GUIturnOnMotor", "payload doesn't matter", 0)
+    myMQTTClient.publish(
+        "MotorController/reynaPi/GUIturnOnMotor", "payload doesn't matter", 0)
 
 
 def turnMotorOff():
-    myMQTTClient.publish("MotorController/reynaPi/GUIturnOffMotor", "payload doesn't matter", 0)
+    myMQTTClient.publish(
+        "MotorController/reynaPi/GUIturnOffMotor", "payload doesn't matter", 0)
 
 
 def quitProgram():
@@ -364,7 +381,8 @@ if __name__ == "__main__":
         myMQTTClient = AWSIoTMQTTClient("NoName")
         myMQTTClient.configureEndpoint(
             "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com", 8883)
-        myMQTTClient.configureCredentials("/home/ryan/Certificates/RootCA.crt", "/home/ryan/Certificates/78ac4c9e75-private.pem.key", "/home/ryan/Certificates/78ac4c9e75-certificate.pem.crt")
+        myMQTTClient.configureCredentials("/home/ryan/Certificates/RootCA.crt",
+                                          "/home/ryan/Certificates/78ac4c9e75-private.pem.key", "/home/ryan/Certificates/78ac4c9e75-certificate.pem.crt")
         myMQTTClient.configureOfflinePublishQueueing(-1)
         myMQTTClient.configureDrainingFrequency(2)
         myMQTTClient.configureConnectDisconnectTimeout(10)
