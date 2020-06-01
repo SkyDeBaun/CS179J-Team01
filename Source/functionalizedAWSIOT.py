@@ -9,7 +9,7 @@ import subscriptionFunctions
 from helpers import getTimeStamp
 from defines import * #TODO Find a better way to do this
 
-CLIENT = "333052c1bf"
+CLIENT = "33k3052c1bfx123z"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 

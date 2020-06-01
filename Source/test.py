@@ -1,7 +1,11 @@
 import sys
 import fake_rpi
+import fake_spi
+import fake_radio
+
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
 sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+sys.modules['RFM69'] = fake_radio.Radio
 
 
 import subscriptionFunctions
@@ -26,7 +30,7 @@ import random
 
 
 #################################################################################
-# Template parametrized test function
+# Template parametrized test function 
 # All capitalized letter words are where things need to be filled in
 # The name of test should have "test_" affixiated to the front
 # INPUT and EXPECTED are automatically filled in in the function call with the items from the list
@@ -57,7 +61,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ' }')) != NotImplemented
+  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ', "Temperature": "21.21", "Light": "72" }')) != NotImplemented
 
 # test values for motor test messages as jsons
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
@@ -67,13 +71,13 @@ message4 = message('{ "distance": ' + "7" + ',"humidity": '+ "30" + ' }')
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motorOperationBehaviour(message, expectedStatus):
-        assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
+	assert subscriptionFunctions.subscribedTopicDictionary["ultrasonic"](None, None, message) == expectedStatus
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
  assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
 
-#Tests for DC fan below
+#Tests for DC fan below (radio callback test borrows this as well)
 
 #Test data
 data1 = '{ "temperature": ' + "20" + ',"humidity": '+ "50" + ' }'
@@ -89,7 +93,14 @@ message4 = message(data4)
 def test_fanOperational(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
 
-
+  
+#radio function test -> uses Test data from above (also)---------
+@pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message3, 1)])
+def test_subHumiture(message, expectedStatus):
+  assert subscriptionFunctions.subscribedTopicDictionary["subHumiture"](None, None, message) == expectedStatus
+   
+  
+  
 # Test createTable() function for DynamoDB using createTable() function from temperatureHumidity.py
 #def test_createDynamoTable():
 #  tableName = "tableToCreateThenDelete"
