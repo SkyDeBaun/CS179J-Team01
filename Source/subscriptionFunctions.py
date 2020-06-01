@@ -8,6 +8,7 @@ from decimal import Decimal
 
 radio = functionalizedRadio.initializeRadio()#will this conflict with other Things/Pi's? (potential for GPIO issue but this resolves pytest issue)
 
+
 # Should be in form customCallback(client, userdata, message)
 # where message contains topic and payload.
 # Note that client and userdata are here just to be aligned with the underneath Paho callback function signature.
@@ -22,23 +23,17 @@ def picture(client, userdata, message):
     finally:
         print("Taking picture and uploading to S3 bin")
         return True
-
-
+    
+  
 def controlFan(self, params, packet):
-    payloadDict = json.loads(packet.payload)
-    humidity = Decimal(payloadDict["humidity"])
-    print(packet.payload)
-    if (humidity > 85):
-        print("Fan is ON")
-        print("####")
-        GPIO.output(16, GPIO.LOW)
-        return 1
-
-    else:
-        print("Fan is OFF")
-        print("####")
-        GPIO.output(16, GPIO.HIGH)
-        return 0
+  payloadDict = json.loads(packet.payload)
+  humidity = Decimal(payloadDict["humidity"])
+  if (humidity > 85):
+    GPIO.output(16, GPIO.LOW)
+    return 1
+  else:
+    GPIO.output(16, GPIO.HIGH)
+    return 0
 
 
 def ultrasonic(client, userdate, message):
@@ -95,8 +90,7 @@ def subHumiture(client, userdate, message):
         except:
             print ("Radio Error Occured")
                 
-        return 0
-        
+        return 0        
 
 
 # subscribe to Sky's radio network data------------------
@@ -115,6 +109,7 @@ def subRadioNodes(client, userdate, message):
 
     print("\n")
 
+    
 # subscribe to Reyna's ultrasonic sensor data-------------
 def subUltrasonic(client, userdate, message):
     payloadInfo = json.loads(message.payload)
@@ -123,12 +118,7 @@ def subUltrasonic(client, userdate, message):
     print("Distance: ", int(distance))
     print("\n")
 
-#radio specific only-------------------------------------- not used-> works but radio fails pytest!
-def interfaceRadio(rad):
-    global radio #refers to variable in functionalizedRadio
-    radio = rad
-
-
+ 
 subscribedTopicDictionary = {
     "picture": picture,
     "controlFan": controlFan,
@@ -137,7 +127,6 @@ subscribedTopicDictionary = {
     "subHumiture": subHumiture,
     "subRadioNodes": subRadioNodes,
     "subUltrasonic": subUltrasonic
-
     # FIXME Find some way to not hardcode value names
 }
 
@@ -146,3 +135,13 @@ subscribedTopicDictionary = {
 # Maybe check if k is valid input
 def generateCallbackFunction(k):
     return subscribedTopicDictionary[k]
+
+  
+#####################################################################
+# Custom callback functions for testing purposes only
+#####################################################################
+GLOBAL_TEST_VARIABLE = 0
+def testCallbackFunction(client, userdata, message):
+  global GLOBAL_TEST_VARIABLE
+  GLOBAL_TEST_VARIABLE += 1
+
