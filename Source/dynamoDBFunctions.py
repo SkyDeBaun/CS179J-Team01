@@ -39,3 +39,4 @@ def createTable(DB, tableName, primaryColumnName):
 def deleteTable(table):
     table.delete()
     return table
+

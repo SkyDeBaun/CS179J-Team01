@@ -146,3 +146,4 @@ def test_subHumiture(message, expectedStatus):
 #  tableSizeAfter = len(response["Items"])
 
 #  assert tableSizeAfter - tableSizeBefore == 1
+

@@ -21,14 +21,15 @@ def uploadToS3(fileToUploadPath, bucketName, accessKeys): #access key from tuple
   transfer = S3Transfer(client)
   transfer.upload_file(fileToUploadPath, bucketName, fileToUploadPath[3:]) # Second filepath is on the bucket server
 
-def otherUpload(fileToUploadPath, bucketName, accessKeys):
-  session = boto3.Session(
-    region_name = 'us-west-1',
-    aws_access_key_id=accessKeys[0],
-    aws_secret_access_key=accessKeys[1],
-  )
-  s3 = session.resource('s3')
-# Filename - File to upload
-# Bucket - Bucket to upload to (the top level directory under AWS S3)
-# Key - S3 object name (can contain subdirectories). If not specified then file_name is used
-  s3.meta.client.upload_file(Filename=fileToUploadPath, Bucket=bucketName, Key=fileToUploadPath[3:])
+#Probably unneeded
+# def otherUpload(fileToUploadPath, bucketName, accessKeys):
+#   session = boto3.Session(
+#     region_name = 'us-west-1',
+#     aws_access_key_id=accessKeys[0],
+#     aws_secret_access_key=accessKeys[1],
+#   )
+#   s3 = session.resource('s3')
+# # Filename - File to upload
+# # Bucket - Bucket to upload to (the top level directory under AWS S3)
+# # Key - S3 object name (can contain subdirectories). If not specified then file_name is used
+#   s3.meta.client.upload_file(Filename=fileToUploadPath, Bucket=bucketName, Key=fileToUploadPath[3:])

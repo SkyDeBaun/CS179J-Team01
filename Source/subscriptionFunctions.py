@@ -144,3 +144,4 @@ GLOBAL_TEST_VARIABLE = 0
 def testCallbackFunction(client, userdata, message):
   global GLOBAL_TEST_VARIABLE
   GLOBAL_TEST_VARIABLE += 1
+
