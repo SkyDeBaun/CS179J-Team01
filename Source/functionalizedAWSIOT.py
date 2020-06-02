@@ -9,7 +9,7 @@ import subscriptionFunctions
 from helpers import getTimeStamp
 from defines import * #TODO Find a better way to do this
 
-CLIENT = "333052c1bf"
+CLIENT = "33k3052c1bfx123z"
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 
@@ -17,7 +17,7 @@ CA_CERTIFICATE = "../Certificates/root-CA.crt"
 PRIVATE_KEY = "../Certificates/device-private.pem.key"
 DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
 
-def AWS_MQTT_subscribe(MQTTClient, topic):
+def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   print("Subscribing to topics")
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
@@ -26,14 +26,23 @@ def AWS_MQTT_subscribe(MQTTClient, topic):
       print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
+        return True
   else:
     #TODO
-    print("Topic not found, fix this")
-    exit(1)
+    print("Custom topic subscription for testing")
+    topicPath = DEVICE_TYPE +"/" + THING_NAME + "/" + topic
+    if MQTTClient.subscribe(topicPath, 1, function):
+      return True
+  return False
 
 
 def AWS_SHADOW_Initialize(): #TODO Test this
-  subprocess.call('./copyCertificates.sh')
+  try:
+    subprocess.call('./copyCertificates.sh')
+  except:
+    CA_CERTIFICATE = "Certificates/root-CA.crt"
+    PRIVATE_KEY = "Certificates/device-private.pem.key"
+    DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
   # AWS IoT certificate based connection---------------------------------------
   myShadowClient = AWSIoTMQTTShadowClient(CLIENT)#this can be any arbitrary string
   myShadowClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
@@ -51,7 +60,12 @@ def AWS_SHADOW_Initialize(): #TODO Test this
 
 
 def AWS_MQTT_Initialize():
-  subprocess.call('./copyCertificates.sh')
+  try:
+    subprocess.call('./copyCertificates.sh')
+  except:
+    CA_CERTIFICATE = "Certificates/root-CA.crt"
+    PRIVATE_KEY = "Certificates/device-private.pem.key"
+    DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
   # AWS IoT certificate based connection---------------------------------------
   myMQTTClient = AWSIoTMQTTClient(CLIENT)#this can be any arbitrary string
   myMQTTClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number

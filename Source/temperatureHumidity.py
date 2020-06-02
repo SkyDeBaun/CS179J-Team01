@@ -70,14 +70,14 @@ def tripwireTriggered(ev=None):
     payload = test
     print("Tripwire triggered.")
     myMQTTClient.publish("CameraModule/Camera1/picture", payload, 0)
-    myMQTTClient.publish("RyanPi/ryan_pi/tripwire", payload, 0)
+
     # Track timestamp in DynamoDB
     now = datetime.utcnow()
     now_str_date = now.strftime('%Y-%m-%d')
     now_str_time = now.strftime('%H:%M:%S')
 
     DB = boto3.resource("dynamodb")
-    tableName_trigger = "tripwireTracking"
+    tableName_trigger = "TripwireTracking"
     primaryColumnName_trigger = "entryNumber"
     columns_trigger = ["date", "time"]
     triggerTable = DB.Table(tableName_trigger)
@@ -91,10 +91,7 @@ if __name__ == "__main__":
 
     # Initialize MQTT client
     myMQTTClient = functionalizedAWSIOT.AWS_MQTT_Initialize()
-    myMQTTClient.subscribe("MotorController/reynaPi/GUItoggleMotorControl", 1, subscriptionFunctions.GUItoggleMotorControl)
-    myMQTTClient.subscribe("MotorController/reynaPi/GUIturnOffMotor", 1, subscriptionFunctions.GUIturnOffMotor)
-    myMQTTClient.subscribe("MotorController/reynaPi/GUIturnOnMotor", 1, subscriptionFunctions.GUIturnOnMotor)
-    #myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, subscriptionFunctions.controlFan)
+    myMQTTClient.subscribe("RyanPi/ryan_pi/data", 1, subscriptionFunctions.controlFan)
     #myMQTTClient.subscribe("ryan_pi/GUItoggleFanControl", 1, subscriptionFunctions.GUItoggleFanControl)
     #myMQTTClient.subscribe("ryan_pi/GUIturnOffFan", 1, subscriptionFunctions.GUIturnOffFan)
     #myMQTTClient.subscribe("ryan_pi/GUIturnOnFan", 1, subscriptionFunctions.GUIturnOnFan)
@@ -121,7 +118,7 @@ if __name__ == "__main__":
     columns_tempHum = ["temperature", "humidity"]
 
     # Trigger timestamp table setup fields
-    tableName_trigger = "tripwireTracking"
+    tableName_trigger = "TripwireTracking"
     primaryColumnName_trigger = "entryNumber"
     columns_trigger = ["date", "time"]
 
@@ -135,7 +132,7 @@ if __name__ == "__main__":
     oldTableTrigger = deleteTable(oldTable_trigger)
 
     # 3 second sleep to give tables time to be deleted on AWS
-    sleep(5)
+    sleep(3)
     print("OLD TABLES DELETED")
 
     # Create new tables
@@ -143,14 +140,13 @@ if __name__ == "__main__":
     newTableTrigger = createTable(DB, tableName_trigger, primaryColumnName_trigger)
 
     #5 second sleep to give tables time to be created on AWS
-    sleep(7)
+    sleep(5)
     print("NEW TABLES CREATED")
 
     # test insert row with entryNumber of 1
     entryNumber_tempHum = 1
-    
-    while True:
-        try:
+    try:
+        while True:
             temperature = None
             humidity = None
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
@@ -167,8 +163,6 @@ if __name__ == "__main__":
                 now_str = now.strftime('%Y-%m-%d %H:%M:%S')
                 payload = '{ "timestamp": "' + now_str + '","temperature": ' + str(temperature) + ',"humidity": '+ str(humidity) + ' }'
                 myMQTTClient.publish("RyanPi/ryan_pi/data", payload, 0)
-                myMQTTClient.publish("RyanPi/ryan_pi/controlFan", payload, 0)
-                myMQTTClient.publish("MotorController/reynaPi/motor2", payload, 0)
             else:
                 print("Failed to retrieve data from humidity sensor")
 
@@ -177,12 +171,16 @@ if __name__ == "__main__":
             # Sleep for 2 seconds, only grab values every 2 seconds
             sleep(2)
 
-        except KeyboardInterrupt:
-            print("Keyboard interrupt, exiting program")
-            GPIO.cleanup()
-            exit()
+    except KeyboardInterrupt:
+       print("Keyboard interrupt, exiting program")
+       GPIO.cleanup()
 
-        except:
-            print("Error publishing")
-            #GPIO.cleanup()
-            #exit()
+    except:
+        print("Error, exiting program")
+        GPIO.cleanup()
+        exit()
+
+    finally:
+        print("Catch all executed")
+        GPIO.cleanup()
+        exit()
