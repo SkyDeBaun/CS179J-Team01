@@ -9,6 +9,7 @@ sys.modules['RFM69'] = fake_radio.Radio
 
 
 import subscriptionFunctions
+import shadowFunctions
 import pytest #My local machine doesn't like this
 import inspect
 import json
@@ -61,7 +62,7 @@ def test_publishFunctionSignatures(function):
 
 @pytest.mark.parametrize("function", functionList) #Tests that the callback functions are implemented
 def test_implementedCallbacks(function):
-  assert function(None, None, message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ', "Temperature": "21.21", "Light": "72" }')) != NotImplemented
+  assert function("Testing", "Testing", message('{ "temperature": ' + "20" + ',"humidity": '+ "50" + ',"distance": ' + "20"  ', "Temperature": "21.21", "Light": "72" }')) != NotImplemented
 
 # test values for motor test messages as jsons
 message1 = message('{ "distance": ' + "25" + ',"humidity": '+ "83" + ' }')
@@ -75,7 +76,7 @@ def test_motorOperationBehaviour(message, expectedStatus):
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 1), (message2, 0), (message3, 1), (message4, 0)])
 def test_motor2OperationBehaviour(message, expectedStatus):
- assert subscriptionFunctions.subscribedTopicDictionary["motor2"](None, None, message) == expectedStatus
+ assert subscriptionFunctions.motor2("Testing", "Testing", message) == expectedStatus
 
 #Tests for DC fan below (radio callback test borrows this as well)
 
@@ -91,16 +92,54 @@ message4 = message(data4)
 
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message2, 1), (message3, 1), (message4, 0)])
 def test_fanOperational(message, expectedStatus):
-  assert subscriptionFunctions.subscribedTopicDictionary["controlFan"](None, None, message) == expectedStatus
+  assert subscriptionFunctions.controlFan("Testing", "Testing", message) == expectedStatus
 
-  
+
 #radio function test -> uses Test data from above (also)---------
 @pytest.mark.parametrize("message, expectedStatus", [(message1, 0), (message3, 1)])
 def test_subHumiture(message, expectedStatus):
   assert subscriptionFunctions.subscribedTopicDictionary["subHumiture"](None, None, message) == expectedStatus
-   
-  
-  
+
+# Tests for GUI triggered callback functions
+
+def test_GUIturnOnFan_enabled():
+  assert subscriptionFunctions.GUIturnOnFan("Test enabled", "Test enabled", None) == 1
+
+def test_GUIturnOnFan_disabled():
+  assert subscriptionFunctions.GUIturnOnFan("Test disabled", "Test disabled", None) == 0
+
+def test_GUIturnOffFan_enabled():
+  assert subscriptionFunctions.GUIturnOffFan("Test enabled", "Test enabled", None) == 1
+
+def test_GUIturnOffFanControl_disabled():
+  assert subscriptionFunctions.GUIturnOffFan("Test disabled", "Test disabled", None) == 0
+
+def test_GUItoggleFanControl_toggleOn():
+  assert subscriptionFunctions.GUItoggleFanControl("Toggle on", "Toggle on", None) == 1
+
+def test_GUItoggleFanControl_toggleOff():
+  assert subscriptionFunctions.GUItoggleFanControl("Toggle off", "Toggle off", None) == 0
+
+def test_GUIturnOnMotor_enabled():
+  assert subscriptionFunctions.GUIturnOnMotor("Test enabled", "Test enabled", None) == 1
+
+def test_GUIturnOnMotor_disabled():
+  assert subscriptionFunctions.GUIturnOnMotor("Test disabled", "Test disabled", None) == 0
+
+def test_GUIturnOffMotor_enabled():
+  assert subscriptionFunctions.GUIturnOffMotor("Test enabled", "Test enabled", None) == 1
+
+def test_GUIturnOffMotorControl_disabled():
+  assert subscriptionFunctions.GUIturnOffMotor("Test disabled", "Test disabled", None) == 0
+
+def test_GUItoggleMotorControl_toggleOn():
+  assert subscriptionFunctions.GUItoggleMotorControl("Toggle on", "Toggle on", None) == 1
+
+def test_GUItoggleMotorControl_toggleOff():
+  assert subscriptionFunctions.GUItoggleMotorControl("Toggle off", "Toggle off", None) == 0
+
+
+
 # Test createTable() function for DynamoDB using createTable() function from temperatureHumidity.py
 #def test_createDynamoTable():
 #  tableName = "tableToCreateThenDelete"

@@ -26,7 +26,7 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
       print(topicPath + t)
       if MQTTClient.subscribe(topicPath + t, 1, callbackFunction):
         print(t + " Subscription successful")
-        return True
+        #return True
   else:
     #TODO
     print("Custom topic subscription for testing")
@@ -60,13 +60,16 @@ def AWS_SHADOW_Initialize(): #TODO Test this
 
 
 def AWS_MQTT_Initialize():
+  global CA_CERTIFICATE
+  global PRIVATE_KEY
+  global DEVICE_CERTIFICATE
   try:
     subprocess.call('./copyCertificates.sh')
   except:
     CA_CERTIFICATE = "Certificates/root-CA.crt"
     PRIVATE_KEY = "Certificates/device-private.pem.key"
     DEVICE_CERTIFICATE = "Certificates/device-certificate.pem.crt"
-  # AWS IoT certificate based connection---------------------------------------
+  #AWS IoT certificate based connection---------------------------------------
   myMQTTClient = AWSIoTMQTTClient(CLIENT)#this can be any arbitrary string
   myMQTTClient.configureEndpoint(AWS_SERVER, PORT)#endpoint and port number
   myMQTTClient.configureCredentials(CA_CERTIFICATE, PRIVATE_KEY, DEVICE_CERTIFICATE)#root ca and certificate used for secure connection
