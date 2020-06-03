@@ -1,6 +1,5 @@
 import sys
 import fake_rpi
-import fake_spi
 import fake_radio
 
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi

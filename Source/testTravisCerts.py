@@ -1,8 +1,12 @@
 import sys
 import fake_rpi
+import fake_radio
+
 
 sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
 sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+sys.modules['RFM69'] = fake_radio.Radio
+
 
 import subscriptionFunctions
 import pytest
