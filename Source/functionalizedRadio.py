@@ -13,6 +13,7 @@ testConfig = True
 def initializeRadio():
     if testConfig:
         radio = Radio(FREQ_915MHZ, node_id, network_id, key, True, False)# use for pytest -> fails for production
+        print("Radio Test Mode: set testConfig = False to enable hardware")
     else:
         radio = Radio(FREQ_915MHZ, node_id, network_id, encryptionKey=key, isHighPower=True, verbose=False) #use for production -> kwargs fails for pytest
 
