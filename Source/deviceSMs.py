@@ -14,6 +14,9 @@ def motorSM(MQTTClient):
   #TODO Update to correct topic for publishing
 	functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "ReynaPi/ultrasonic", payload)
 
+def fanSM(MQTTClient):
+  return NotImplemented
+
 
 def SMtest(MQTTClient):
   if functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "testing", "testing state machine"):

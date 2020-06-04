@@ -12,9 +12,9 @@ from helpers import getTimeStamp
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 
-CA_CERTIFICATE = "../Certificates/root-CA.crt"
-PRIVATE_KEY = "../Certificates/device-private.pem.key"
-DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
+CA_CERTIFICATE = "/home/pi/CS179J-Team01/Certificates/root-CA.crt"
+PRIVATE_KEY = "/home/pi/CS179J-Team01/Certificates/device-private.pem.key"
+DEVICE_CERTIFICATE = "/home/pi/CS179J-Team01/Certificates/device-certificate.pem.crt"
 
 def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
   from init import DEVICE_TYPE
