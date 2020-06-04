@@ -26,7 +26,7 @@ def newMain():
 
   try:
     while 1:
-      stateMachine()
+      stateMachine(MQTTClient)
       sleep(3)
 
   finally:
@@ -34,4 +34,4 @@ def newMain():
 #functionalizedAWSIOT.AWS_MQTT_publish(MQTTClient, "testing", "testing message boop beep")
 
 if __name__ == "__main__":
-  main()
+  newMain()

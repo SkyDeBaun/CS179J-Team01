@@ -8,11 +8,7 @@ import subscriptionFunctions
 
 from helpers import getTimeStamp
 
-from init import DEVICE_TYPE
-from init import THING_NAME
-from init import TOPICS
 
-CLIENT = THING_NAME
 AWS_SERVER = "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com"
 PORT = 8883
 
@@ -21,6 +17,9 @@ PRIVATE_KEY = "../Certificates/device-private.pem.key"
 DEVICE_CERTIFICATE = "../Certificates/device-certificate.pem.crt"
 
 def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
+  from init import DEVICE_TYPE
+  from init import THING_NAME
+  from init import TOPICS
   print("Subscribing to topics")
   topicPath = DEVICE_TYPE +"/" + THING_NAME + "/"
   if topic == None:
@@ -63,6 +62,13 @@ def AWS_MQTT_subscribe(MQTTClient, topic, function=None):
 
 
 def AWS_MQTT_Initialize():
+  from init import DEVICE_TYPE
+  from init import THING_NAME
+  from init import TOPICS
+  CLIENT = THING_NAME
+  global CA_CERTIFICATE
+  global PRIVATE_KEY
+  global DEVICE_CERTIFICATE
   try:
     subprocess.call('./copyCertificates.sh')
   except:

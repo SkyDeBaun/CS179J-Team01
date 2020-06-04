@@ -14,7 +14,8 @@ import cleanup
 def initializeCameraModule(myMQTTClient): #No hardware setup required, just checking the camera is connected
   try:
     output = subprocess.run(["/opt/vc/bin/vcgencmd", "get_camera"], universal_newlines=True, stdout=subprocess.PIPE)
-    if output.stdout.find("0") :
+    print(output.stdout)
+    if "0" in output.stdout:
       print("Camera not connected or not enabled")
       exit(1)
   except:

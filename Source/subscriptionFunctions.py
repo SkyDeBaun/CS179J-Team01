@@ -13,6 +13,7 @@ from decimal import Decimal
 def picture(client, userdata, message):
   bucketName = "senior-design-camera-files"
   try:
+    print("function callled")
     fileName = cameraCode.takePicture()
     helpers.uploadToS3(fileName[0], bucketName, helpers.getAWSCredentials())
   finally:
