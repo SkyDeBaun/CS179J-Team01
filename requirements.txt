@@ -1,5 +1,4 @@
 attrs==19.3.0
-autopep8==1.5.2
 AWSIoTPythonSDK==1.4.8
 boto3==1.13.16
 botocore==1.16.16
