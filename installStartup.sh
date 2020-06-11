@@ -42,7 +42,7 @@ projectpyenv="source"
 projectpyenv="$projectpyenv $1"
 
 printf '$-1i\n'${projectpyenv}'\n.\nw\n' | ed -s /etc/rc.local
-printf '$-1i\n'${command}'\n.\nw\n' | ed -s "test.txt"
+printf '$-1i\n'${command}'\n.\nw\n' | ed -s /etc/rc.local
 
 cat /etc/rc.local
 echo "Installation successful"
