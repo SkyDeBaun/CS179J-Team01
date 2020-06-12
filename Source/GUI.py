@@ -102,16 +102,16 @@ sub3 = plt.subplot(2, 3, 3)
 #sub4 = plt.subplot(2, 2, 4)
 sub1.set_title(
     "Average Temperature: Waiting...\nCurrent Temperature: Waiting...\n \nTemperature vs. Entries", fontsize=10)
-sub1.set_ylabel("Temperature (Celcius)")
-sub1.set_xlabel("Entries")
+sub1.set_ylabel("Temperature (C)")
+sub1.set_xlabel("Temperature Entries")
 sub2.set_title(
     "Average Humidity: Waiting...\nCurrent Humidity: Waiting...\n \nHumidity vs. Entries", fontsize=10)
 sub2.set_ylabel("Humidity (%)")
-sub2.set_xlabel("Entries")
+sub2.set_xlabel("Humidity Entries")
 sub3.set_title(
     "Max Light Level: Waiting...\nCurrent Light Level: Waiting...\n \nLight Level vs. Entries", fontsize=10)
 sub3.set_ylabel("Light Level (%)")
-sub3.set_xlabel("Entries")
+sub3.set_xlabel("Light Level Entries")
 
 # Plot once to set labels
 sub1.plot(temperatureGraph_x, temperatureGraph_y,
@@ -163,11 +163,11 @@ def animate(i):
         sub3.set_xlim(left=max(0, entryCountLightLevel - 50),
                       right=entryCountLightLevel + 25)
         sub1.set_title(
-            f"Average Temperature: {avgTemperature}\nCurrent Temperature: {currTemperature}\n \nTemperature vs. Entries", fontsize=10)
+            f"Average Temperature: {avgTemperature} C\nCurrent Temperature: {currTemperature} C\n \nTemperature vs. Entries", fontsize=10)
         sub2.set_title(
-            f"Average Humidity: {avgHumidity}\nCurrent Humidity: {currHumidity}\n \nHumidity vs. Entries", fontsize=10)
+            f"Average Humidity: {avgHumidity}%\nCurrent Humidity: {currHumidity}%\n \nHumidity vs. Entries", fontsize=10)
         sub3.set_title(
-            f"Max Light Level: {maxLightLevel}\nCurrent Light Level: {currLightLevel}\n \nLight Level vs. Entries", fontsize=10)
+            f"Max Light Level: {maxLightLevel}%\nCurrent Light Level: {currLightLevel}%\n \nLight Level vs. Entries", fontsize=10)
 
     except:
         print(f"Error occurred in plotting data at tempHumEntryCount = {entryCountTempHum}")
@@ -206,16 +206,16 @@ def reset_graphs():
     sub1.set_title(
         "Average Temperature: Waiting...\nCurrent Temperature: Waiting...\n \nTemperature vs. Entries", fontsize=10)
     sub1.set_ylabel("Temperature (Celcius)")
-    sub1.set_xlabel("Entries")
+    sub1.set_xlabel("Temperature Entries")
     sub2.set_title(
         "Average Humidity: Waiting...\nCurrent Temperature: Waiting...\n \nHumidity vs. Entries", fontsize=10)
-    sub2.set_ylabel("Humidity (Percentage)")
-    sub2.set_xlabel("Entries")
+    sub2.set_ylabel("Humidity (%)")
+    sub2.set_xlabel("Humidity Entries")
     sub3.set_title(
         "Max Light Level: Waiting...\nCurrent Light Level: Waiting...\n \nLight Level vs. Entries", fontsize=10)
     sub3.set_ylabel("Light Level (%)")
-    sub3.set_xlabel("Entries")
-
+    sub3.set_xlabel("Light Level Entries")
+    
     entryCountTempHum = 0
     entryCountLightLevel = 0
     maxLightLevel = 0
@@ -230,6 +230,20 @@ def reset_graphs():
     humidityGraph_y.clear()
     lightLevel_x.clear()
     lightLevel_y.clear()
+    
+    sub1.plot(temperatureGraph_x, temperatureGraph_y,
+          color='blue', label='Temperature')
+    sub1.legend(loc='upper right')
+    sub1.set_xlim(left=max(0, entryCountTempHum - 50),
+              right=entryCountTempHum + 25)
+    sub2.plot(humidityGraph_x, humidityGraph_y, color='red', label='Humidity')
+    sub2.legend(loc='upper right')
+    sub2.set_xlim(left=max(0, entryCountTempHum - 50),
+              right=entryCountTempHum + 25)
+    sub3.plot(lightLevel_x, lightLevel_y, color='green', label='Light Level')
+    sub3.legend(loc='upper right')
+    sub3.set_xlim(left=max(0, entryCountLightLevel - 50),
+              right=entryCountLightLevel + 25)
 
     #tripwireActivationCount = 0
     #fig.suptitle(f"Tripwire Activations: {tripwireActivationCount}", fontsize=12)
@@ -238,6 +252,7 @@ def reset_graphs():
 
 
 def takePicture():
+    payload = "doesn't matter"
     myMQTTClient.publish("CameraModule/Camera1/picture", payload, 0)
 
 
@@ -378,7 +393,7 @@ if __name__ == "__main__":
     try:
 
         # MQTT setup
-        myMQTTClient = AWSIoTMQTTClient("NoName")
+        myMQTTClient = AWSIoTMQTTClient("theGUI-ID")
         myMQTTClient.configureEndpoint(
             "a3te7fgu4kv468-ats.iot.us-west-1.amazonaws.com", 8883)
         myMQTTClient.configureCredentials("/home/ryan/Certificates/RootCA.crt",
