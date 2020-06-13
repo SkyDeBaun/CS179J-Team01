@@ -30,19 +30,24 @@ All subsystems use Raspberry Pi’s for WiFi connectivity and GPIO functionality
 ### Sensor Module
 BCM pin numbers 16, 20, and 21. 16 for sending on/off signal to relay that powers DC fan. 20 for input pin from DHT 22 temperature/humidity sensor. 21 for signal from tripwire laser reciever. 
 
-![Sensor Module Pinout](/Images/raspberry-pi-pinout_ryan.png)
+<p align="center">
+  <img src="/Images/raspberry-pi-pinout_ryan.png">
+</p>
 
 
 ### Radio Module:
 The radio subsystem consists of one central RFM69 HCW radio (the radio hub) connected to a Raspberry Pi as illustrated below.  Additional slaved radio nodes are wired to ATmega 1284 microcontrollers (not shown).
 
-![Sensor Module Pinout](/Images/raspberry-rfm69_pinout.png)
-![Sensor Module Pinout](/Images/rfm69_pinout.png)
+<p align="center">
+  <img src="/Images/raspberry-rfm69_pinout.png">
+</p>
+
+<p align="center">
+  <img src="/Images/rfm69_pinout.png">
+</p>
 
 ### Motor Controller Module:
 Contains 2 DC Motors, Motor Driver, and Ultrasonic Sensor connected to the Raspberry Pi Zero W. The Motor Driver is connected to pins 8, 10, 19, 21, 36 and 38 which controls the 2 motors used in the system. The Ultrasonic sensor needs connection of trig and echo through pins 11 and 16 which is used to receive distance data. 
-
-![Sensor Module Pinout](/Images/raspberryPi_pinout_motorController.png)
 
 <p align="center">
   <img src="/Images/raspberryPi_pinout_motorController.png">
