@@ -28,8 +28,10 @@ Run `pip install -r requirements.txt`
 All subsystems use Raspberry Pi’s for WiFi connectivity and GPIO functionality.
 
 ### Sensor Module
-
 BCM pin numbers 16, 20, and 21. 16 for sending on/off signal to relay that powers DC fan. 20 for input pin from DHT 22 temperature/humidity sensor. 21 for signal from tripwire laser reciever. 
+
+![Sensor Module Pinout](/Images/raspberry-pi-pinout_ryan.png)
+Format: ![Alt Text](url)
 
 ### Radio Module:
 The radio subsystem consists of one central RFM69 HCW radio (the radio hub) connected to a Raspberry Pi as illustrated below.  Additional slaved radio nodes are wired to ATmega 1284 microcontrollers (not shown).
