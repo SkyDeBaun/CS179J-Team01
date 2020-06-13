@@ -90,11 +90,11 @@ Configure the radio module as follows:
 ### Camera Module
 There are two ways to run the camera module
 
- - Change to the UyTran/UnifiedExecution branch
+1. Change to the UyTran/UnifiedExecution branch
    - Move to the Source directory
    -  `python main.py -c`
 
 
- - On the master branch
+1. On the master branch
    - Modify the defines.py file 
 
