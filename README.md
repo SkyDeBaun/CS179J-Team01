@@ -64,6 +64,29 @@ sudo raspi-config
 
 ## Running the System
 
+### Sensor Module
+
+### Radio Module
+Configure the radio module as follows:
+
+ - Open functionalizedRadio.py in the Source directory
+   - Set node_id (from 1 - 255, by convention network hub is 1)
+   - Set network_id (from 1 - 255)
+   - Change key = "sampleEncryptKey" to a key of your chosing
+   - Set testConfig = false
+   
+ - Open radio_hub.py
+   - Configure JSONPayload to match expected inputs on radio network
+   - Add/edit myMQTTClient.subscribe() functions to subscribe to other module's sensor data
+   
+ - Open subscriptionFunctions.py
+   - Add callback functions for desired functionality
+   
+
+
+### Motor Controller Module
+
+
 ### Camera Module
 There are two ways to run the camera module
 
