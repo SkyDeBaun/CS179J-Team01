@@ -69,7 +69,7 @@ There are two ways to run the camera module
 
  - Change to the UyTran/UnifiedExecution branch
    - Move to the Source directory
-   - '''python main.py -c'''
+   - 'python main.py -c'
 
  - On the master branch
    - Modify the defines.py file 
