@@ -69,17 +69,17 @@ sudo raspi-config
 ### Radio Module
 Configure the radio module as follows:
 
- 1. Open functionalizedRadio.py in the Source directory
+1. Open functionalizedRadio.py in the Source directory
    - Set node_id (from 1 - 255, by convention network hub is 1)
    - Set network_id (from 1 - 255)
    - Change key = "sampleEncryptKey" to a key of your chosing
    - Set testConfig = false
    
- 1. Open radio_hub.py
+1. Open radio_hub.py
    - Configure JSONPayload to match expected inputs on radio network
    - Add/edit myMQTTClient.subscribe() functions to subscribe to other module's sensor data
    
- 1. Open subscriptionFunctions.py
+1. Open subscriptionFunctions.py
    - Add callback functions for desired functionality
    
 
