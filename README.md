@@ -67,4 +67,11 @@ sudo raspi-config
 ### Camera Module
 There are two ways to run the camera module
 
+1.
+  a. Change to the UyTran/UnifiedExecution branch
+  b. Move to the Source directory
+  c. '''python main.py -c'''
+
+1. On the master branch
+  a. Modify the defines.py file 
 
