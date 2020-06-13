@@ -1,0 +1,1 @@
+Images directory used for project Readme documentation
