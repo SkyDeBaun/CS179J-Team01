@@ -3,7 +3,7 @@
 ## Extensible Sensor Network
 
 ## AWS Setup
-### This project utilizes Amazon Web Services IoT Core to securely connect and facilitate communications between devices and the cloud using the MQTT messaging protocol.
+This project utilizes Amazon Web Services IoT Core to securely connect and facilitate communications between devices and the cloud using the MQTT messaging protocol.
 
 1. Create an AWS account
 1. Create IAM user accounts to manage access controls (if needed)
