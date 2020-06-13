@@ -42,6 +42,12 @@ The radio subsystem consists of one central RFM69 HCW radio (the radio hub) conn
 ### Motor Controller Module:
 Contains 2 DC Motors, Motor Driver, and Ultrasonic Sensor connected to the Raspberry Pi Zero W. The Motor Driver is connected to pins 8, 10, 19, 21, 36 and 38 which controls the 2 motors used in the system. The Ultrasonic sensor needs connection of trig and echo through pins 11 and 16 which is used to receive distance data. 
 
+![Sensor Module Pinout](/Images/raspberryPi_pinout_motorController.png)
+
+<p align="center">
+  <img src="/Images/raspberryPi_pinout_motorController.png">
+</p>
+
 ### Camera Module
 Plug the camera into the dedicated Raspberry Pi Camera slot.
 Enable the camera using raspi-config
