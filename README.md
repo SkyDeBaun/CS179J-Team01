@@ -5,12 +5,12 @@
 ## AWS Setup
 ### This project utilizes Amazon Web Services IoT Core to securely connect and facilitate communications between devices and the cloud using the MQTT messaging protocol.
 
-* Create an AWS account
-* Create IAM user accounts to manage access controls (if needed)
-* Select Region providing desired services (Oregon offers the most features)
-* Create and configure device Things (includes x.509 secure certificates)
-* Download secure certificates for project “Certificates” directory
-* Create and configure AWS Rules and/or Lambdas (as needed)
+1. Create an AWS account
+1. Create IAM user accounts to manage access controls (if needed)
+1. Select Region providing desired services (Oregon offers the most features)
+1. Create and configure device Things (includes x.509 secure certificates)
+1. Download secure certificates for project “Certificates” directory
+1. Create and configure AWS Rules and/or Lambdas (as needed)
 
 
 
@@ -47,8 +47,3 @@ Move to the Source directory
 On the master branch
 Modify the defines.py file 
 
-1. Item 1
-1. Item 2
-1. Item 3
-   1. Item 3a
-   1. Item 3b
