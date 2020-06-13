@@ -1,6 +1,6 @@
 # CS179J - Senior Design Project
 
-## Extensible Sensor Network
+# Extensible Sensor Network
 
 ## AWS Setup
 This project utilizes Amazon Web Services IoT Core to securely connect and facilitate communications between devices and the cloud using the MQTT messaging protocol.
@@ -11,7 +11,6 @@ This project utilizes Amazon Web Services IoT Core to securely connect and facil
 1. Create and configure device Things (includes x.509 secure certificates)
 1. Download secure certificates for project “Certificates” directory
 1. Create and configure AWS Rules and/or Lambdas (as needed)
-
 
 
 ## Python Dependencies
