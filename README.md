@@ -48,7 +48,7 @@ This project allows for an email alert which contains a downloadable link to an 
      - Specify message to email to be the generated URL 
 
 ## Python Dependencies
-Project has only been tested for Python 3.6+
+Project has only been tested for Python 3.6+  
 We recommend that you set up a python virtual environment before continuing
 
 ## Project Installation
@@ -150,5 +150,5 @@ There are two ways to run the camera module
 1. On the master branch
    - Modify the defines.py file by uncommenting the three camera section lines and commenting everything else out
    - Move to the Source directory
-   - python main.py
+   - `python main.py`
 
