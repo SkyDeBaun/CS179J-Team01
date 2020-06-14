@@ -19,10 +19,10 @@ Project has only been tested for Python 3.6+
 We recommend that you set up a python virtual environment before continuing
 
 ## Project Installation
-Use a `git clone` or download this repository
-Activate your Python virtualenv
-Navigate to the base directory of this repository on your device
-Run `pip install -r requirements.txt`
+- Use a `git clone` or download this repository
+- Activate your Python virtualenv
+- Navigate to the base directory of this repository on your device
+- Run `pip install -r requirements.txt`
 
 ## Hardware Setup
 All subsystems use Raspberry Pi’s for WiFi connectivity and GPIO functionality.
@@ -54,8 +54,8 @@ Contains 2 DC Motors, Motor Driver, and Ultrasonic Sensor connected to the Raspb
 </p>
 
 ### Camera Module
-Plug the camera into the dedicated Raspberry Pi Camera slot.
-Enable the camera using raspi-config
+- Plug the camera into the dedicated Raspberry Pi Camera slot.
+- Enable the camera using raspi-config
 ```
 sudo apt update
 sudo apt full-upgrade
@@ -96,5 +96,7 @@ There are two ways to run the camera module
 
 
 1. On the master branch
-   - Modify the defines.py file 
+   - Modify the defines.py file by uncommenting the three camera section lines and commenting everything else out
+   - Move to the Source directory
+   - python main.py
 
