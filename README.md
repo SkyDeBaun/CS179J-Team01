@@ -43,8 +43,8 @@ This project allows for an email alert which contains a downloadable link to an 
      - Enable the trigger
    - Write a function in python3.7 to send image link
      - Create 2 boto3 clients one for SNS and one for S3
-     - Generate a pre-signed URL
-     - Use SNS client specify topic created for SNS
+     - Generate a pre-signed URL for image uploaded to S3 bucket
+     - Use SNS client and set topic to be the topic created for SNS email in step one
      - Specify message to email to be the generated URL 
 
 ## Python Dependencies
