@@ -5,7 +5,7 @@
 ## Project Description
 
 ### System Overview
-This project provides remote environmental and security monitoring and actuator control using Amazon Web Services (AWS) IoT Core services and inexpensive off the shelf components (Raspberry Pi's).
+This project provides remote environmental and security monitoring and actuator control using inexpensive off the shelf components (Raspberry Pi's).
 
 ### System Purpose
 The Extensible Sensor Network (ESN) is an Internet of Things (IoT) framework for monitoring and control of remote sensors, actuators, and security devices using the Amazon Web Services (AWS) IoT framework.
