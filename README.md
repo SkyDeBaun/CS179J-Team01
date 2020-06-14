@@ -21,7 +21,31 @@ This project utilizes Amazon Web Services IoT Core to securely connect to and fa
 1. Download secure certificates for project “Certificates” directory
 1. Create and configure AWS Rules and/or Lambdas (as needed)
 
+## AWS Lambda setup (as needed)
+This project allows for an email alert which contains a downloadable link to an image uploaded to an S3 bucket. This is done through a lambda function that is triggered by an image input to the S3 bucket which then invokes the Simple Notification Service (SNS).
 
+1. Set up an email with SNS
+   - Create a topic 
+   - Create a subscription in the topic
+   - Set protocol to be an email
+   - Set endpoint to be desired email 
+
+1. Create an S3 Bucket which allows for image input 
+
+1. Create an IAM Role
+   - Attach 3 policies (AWSLambdaFullAccess, AmazonS3FullAccess, and CloudWatchFullAccess)
+    
+1. Create Lambda function
+   - Use the created IAM Role
+   - Add trigger from created S3 Bucket 
+     - Select desired S3 Bucket
+     - Set event type to be all object create events
+     - Enable the trigger
+   - Write a function in python3.7 to send image link
+     - Create 2 boto3 clients one for SNS and one for S3
+     - Generate a pre-signed URL for image uploaded to S3 bucket
+     - Use SNS client and set topic to be the topic created for SNS email in step one
+     - Specify message to email to be the generated URL 
 
 ## Python Dependencies
 Project has only been tested for Python 3.6+
@@ -102,6 +126,17 @@ Configure the radio module as follows:
 
 
 ### Motor Controller Module
+Configure the Motor Controller Module as follows:
+
+1. Changes to reynaPiNode.py
+   - Go to Source directory and open reynaPiNode.py 
+   - Change myMQTTClient.subscribe() 
+     - Change first parameter of subscribe to be the specified topic that is receiving humidity data. The      specified topic path for publishing humidity data for the Sensor Module.
+2. Changes to defines.py
+   - Comment all but the defines for Motor Controller
+   - Change THINGS_NAME to be the specified thing name 
+   - Change TOPICS to be the desired callback functions in subscriptionFunctions.py
+     - For GUI and both motor actuations use ultrasonic, motor2, GUItoggleMotorControl, GUIturnOnMotor, and GUIturnOffMotor for TOPICS 
 
 
 ### Camera Module
