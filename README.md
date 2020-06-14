@@ -68,10 +68,11 @@ sudo raspi-config
 Configure the sensor module as follows:
 
 1. Add new publication paths
-   - Insert new publish paths to temperatureHumidity.py if more subscribers need temperature and humidity data
+   - Insert new publication paths to temperatureHumidity.py to publish data to specific topics
    
 1. Add new subscription paths and callback functions
-   - Open subscriptionFunctions.py and add callback functions for desired functionality
+   - Add subscription name to defines.py, which will auto-generate subscription path 
+   - Open subscriptionFunctions.py and add callback functions for each subscription
 
 ### Radio Module
 Configure the radio module as follows:
